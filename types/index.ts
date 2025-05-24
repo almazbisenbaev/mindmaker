@@ -1,36 +1,17 @@
 export type SWOTColumnId = 'strengths' | 'weaknesses' | 'opportunities' | 'threats';
+
 export type LeanColumnId = 
-  | 'problem'
+  | 'problem' 
   | 'solution'
   | 'metrics'
-  | 'value_proposition'  // changed from 'uvp'
-  | 'unfair_advantage'   // changed from 'advantage'
+  | 'value_proposition'
+  | 'unfair_advantage'
   | 'channels'
-  | 'customer_segments'  // changed from 'segments'
-  | 'cost_structure'     // changed from 'costs'
-  | 'revenue_streams';   // changed from 'revenue'
+  | 'customer_segments'
+  | 'cost_structure'
+  | 'revenue_streams';
 
 export type ColumnId = SWOTColumnId | LeanColumnId;
-
-export const isSWOTColumnId = (columnId: ColumnId): columnId is SWOTColumnId => {
-  const swotColumns: SWOTColumnId[] = ['strengths', 'weaknesses', 'opportunities', 'threats'];
-  return swotColumns.includes(columnId as SWOTColumnId);
-};
-
-export const isLeanColumnId = (columnId: ColumnId): columnId is LeanColumnId => {
-  const leanColumns: LeanColumnId[] = [
-    'problem',
-    'solution',
-    'metrics',
-    'value_proposition',
-    'unfair_advantage',
-    'channels',
-    'customer_segments',
-    'cost_structure',
-    'revenue_streams'
-  ];
-  return leanColumns.includes(columnId as LeanColumnId);
-};
 
 export interface Document {
   id: string;
@@ -52,3 +33,29 @@ export interface Card {
   created_at: string;
   updated_at: string;
 }
+
+// Add these type guard functions as named exports
+export const isLeanColumnId = (columnId: ColumnId): columnId is LeanColumnId => {
+  const leanColumns: LeanColumnId[] = [
+    'problem',
+    'solution',
+    'metrics',
+    'value_proposition',
+    'unfair_advantage',
+    'channels',
+    'customer_segments',
+    'cost_structure',
+    'revenue_streams'
+  ];
+  return leanColumns.includes(columnId as LeanColumnId);
+};
+
+export const isSWOTColumnId = (columnId: ColumnId): columnId is SWOTColumnId => {
+  const swotColumns: SWOTColumnId[] = [
+    'strengths',
+    'weaknesses',
+    'opportunities',
+    'threats'
+  ];
+  return swotColumns.includes(columnId as SWOTColumnId);
+};
