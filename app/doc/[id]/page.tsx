@@ -1,26 +1,32 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
+import { Document, Card } from '@/types';
 import { templates, TemplateType } from "@/components/document-templates/index";
 
-interface Document {
-  id: string;
-  user_id: string;
-  template: TemplateType;  // Changed from 'string' to 'TemplateType'
-  title: string;
-  status: 'public' | 'private';
-  created_at: string;
-  updated_at: string;
-  description: string;
+interface TemplateRendererProps {
+  document: Document;
+  cards: Card[];
 }
+
+const TemplateRenderer = ({ document, cards }: TemplateRendererProps) => {
+  if (!(document.template in templates)) {
+    return <div className="text-red-500">Unknown template type: {document.template}</div>;
+  }
+  
+  const Template = templates[document.template];
+  return <Template document={document} cards={cards} />;
+};
 
 
 export default function DocumentPage() {
   const router = useRouter();
   const [document, setDocument] = useState<Document | null>(null);
+  const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +36,7 @@ export default function DocumentPage() {
   useEffect(() => {
     const supabase = createClient();
     
-    const fetchDocument = async () => {
+    const fetchDocumentAndCards = async () => {
       try {
         setIsLoading(true);
         // Check auth
@@ -40,19 +46,32 @@ export default function DocumentPage() {
           return;
         }
 
-        // Fetch document
-        const { data, error: docError } = await supabase
-          .from('documents')
-          .select('*')
-          .eq('id', documentId)
-          .single();
+        // Fetch document and cards in parallel
+        const [documentResponse, cardsResponse] = await Promise.all([
+          supabase
+            .from('documents')
+            .select('*')
+            .eq('id', documentId)
+            .single(),
+          supabase
+            .from('cards')
+            .select('*')
+            .eq('document_id', documentId)
+            .order('created_at', { ascending: true })
+        ]);
 
-        if (docError) {
-          setError(docError.message);
+        if (documentResponse.error) {
+          setError(documentResponse.error.message);
           return;
         }
 
-        setDocument(data);
+        if (cardsResponse.error) {
+          setError(cardsResponse.error.message);
+          return;
+        }
+
+        setDocument(documentResponse.data);
+        setCards(cardsResponse.data || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -60,7 +79,7 @@ export default function DocumentPage() {
       }
     };
 
-    fetchDocument();
+    fetchDocumentAndCards();
   }, [documentId, router]);
 
   if (isLoading) {
@@ -76,29 +95,8 @@ export default function DocumentPage() {
       <h2 className="text-2xl text-center mb-8">Document Page</h2>
 
       {document && (
-        <div className="max-w-4xl mx-auto">
-          {document.template in templates ? (
-            <>
-              <h1 className="text-3xl font-bold mb-4">{document.title}</h1>
-              {/* Use the component directly as JSX */}
-              {(() => {
-                const Template = templates[document.template];
-                return <Template document={document} />;
-              })()}
-            </>
-          ) : (
-            <div className="text-red-500">
-              Unknown template type: {document.template}
-            </div>
-          )}
-          
-          {/* Debug view */}
-          <details className="mt-8">
-            <summary className="cursor-pointer text-gray-500">Raw Data</summary>
-            <pre className="mt-2 p-4 bg-gray-100 rounded overflow-auto">
-              {JSON.stringify(document, null, 2)}
-            </pre>
-          </details>
+        <div className="max-w-6xl mx-auto">
+          <TemplateRenderer document={document} cards={cards} />
         </div>
       )}
     </div>
