@@ -35,7 +35,7 @@ export interface Card {
 }
 
 // Add these type guard functions as named exports
-export const isLeanColumnId = (columnId: ColumnId): columnId is LeanColumnId => {
+export const isLeanColumnId = (columnId: string): columnId is LeanColumnId => {
   const leanColumns: LeanColumnId[] = [
     'problem',
     'solution',
@@ -59,3 +59,13 @@ export const isSWOTColumnId = (columnId: ColumnId): columnId is SWOTColumnId => 
   ];
   return swotColumns.includes(columnId as SWOTColumnId);
 };
+
+
+
+export interface CardComment {
+  id: string;
+  card_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}

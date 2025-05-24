@@ -1,12 +1,14 @@
 import React from 'react';
-import { Document, Card, LeanColumnId, isLeanColumnId } from '@/types';
+import { Document, Card, CardComment, LeanColumnId, isLeanColumnId } from '@/types';
+import { Column } from '../Column';
 
 interface LeanTemplateProps {
   document: Document;
   cards: Card[];
+  comments: CardComment[];
 }
 
-export function LeanTemplate({ document, cards }: LeanTemplateProps) {
+export function LeanTemplate({ document, cards, comments }: LeanTemplateProps) {
   // Filter cards to only include those with valid Lean columns
   const leanCards = cards.filter(card => isLeanColumnId(card.column_id));
 
@@ -27,28 +29,20 @@ export function LeanTemplate({ document, cards }: LeanTemplateProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Problem */}
-      <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-        <h3 className="text-lg font-semibold text-red-800 mb-2">Problem</h3>
-        <div className="space-y-2">
-          {cardsByColumn.problem?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Column 
+        title="Problem" 
+        cards={cardsByColumn.problem || []}
+        comments={comments}  // Add this
+        className="bg-red-50"
+      />
 
       {/* Solution */}
-      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-        <h3 className="text-lg font-semibold text-green-800 mb-2">Solution</h3>
-        <div className="space-y-2">
-          {cardsByColumn.solution?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Column 
+        title="Solution" 
+        cards={cardsByColumn.solution || []}
+        comments={comments}  // Add this
+        className="bg-green-50"
+      />
 
       {/* Metrics */}
       <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -63,17 +57,13 @@ export function LeanTemplate({ document, cards }: LeanTemplateProps) {
       </div>
 
       {/* Unique Value Proposition */}
-      <div className="p-4 bg-purple-50 rounded-lg border border-purple-200 md:col-span-3">
-        <h3 className="text-lg font-semibold text-purple-800 mb-2">Unique Value Proposition</h3>
-        <div className="space-y-2">
-          {cardsByColumn.value_proposition?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
+      <Column 
+        title="Unique Value Proposition" 
+        cards={cardsByColumn.value_proposition || []}
+        comments={comments}  // Add this
+        className="bg-purple-50 md:col-span-3"
+      />
+      
       {/* Unfair Advantage */}
       <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
         <h3 className="text-lg font-semibold text-yellow-800 mb-2">Unfair Advantage</h3>
