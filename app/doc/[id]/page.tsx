@@ -29,6 +29,7 @@ export default function DocumentPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const params = useParams();
   const documentId = params.id;
@@ -39,12 +40,10 @@ export default function DocumentPage() {
     const fetchDocumentAndCards = async () => {
       try {
         setIsLoading(true);
-        // Check auth
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-          router.push("/sign-in");
-          return;
-        }
+        
+        // Check auth status but don't redirect
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
 
         // Fetch document and cards in parallel
         const [documentResponse, cardsResponse] = await Promise.all([
@@ -65,6 +64,12 @@ export default function DocumentPage() {
           return;
         }
 
+        // Check if document is private and user is not logged in
+        if (documentResponse.data.status === 'private' && !user) {
+          setError('This document is private');
+          return;
+        }
+
         if (cardsResponse.error) {
           setError(cardsResponse.error.message);
           return;
@@ -80,7 +85,7 @@ export default function DocumentPage() {
     };
 
     fetchDocumentAndCards();
-  }, [documentId, router]);
+  }, [documentId]);
 
   if (isLoading) {
     return <div className="p-6 text-center">Loading...</div>;
