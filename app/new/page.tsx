@@ -1,7 +1,10 @@
-export default async function NewPage() {
+import DocumentForm from './components/DocumentForm';
+
+export default function NewDocument() {
   return (
-    <>
-      <h2 className="text-2xl text-center flex items-center justify-center">New document page</h2>
-    </>
+    <div className="container mx-auto py-8">
+      <h2 className="text-2xl font-bold text-center mb-8">Create New Document</h2>
+      <DocumentForm />
+    </div>
   );
 }
