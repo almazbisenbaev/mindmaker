@@ -10,8 +10,9 @@ interface LeanTemplateProps {
   comments: CardComment[];
 }
 
-export function LeanTemplate({ document, cards: initialCards, comments }: LeanTemplateProps) {
+export function LeanTemplate({ document, cards: initialCards, comments: initialComments }: LeanTemplateProps) {
   const [cards, setCards] = React.useState(initialCards);
+  const [comments, setComments] = React.useState(initialComments);
   const cardsByColumn = useCardsByColumn(cards);
 
   const refreshCards = async () => {
@@ -27,8 +28,25 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
     }
   };
 
+  const refreshComments = async () => {
+    const supabase = createClient();
+    const { data: updatedComments } = await supabase
+      .from('comments')
+      .select('*')
+      .in('card_id', cards.map(card => card.id))
+      .order('created_at');
+
+    if (updatedComments) {
+      setComments(updatedComments);
+    }
+  };
+
   const handleCardCreated = async () => {
     await refreshCards();
+  };
+
+  const handleCommentsUpdated = async () => {
+    await refreshComments();
   };
 
   return (
@@ -41,6 +59,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="problem"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Solution"
@@ -50,6 +69,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="solution"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Metrics"
@@ -59,6 +79,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="metrics"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Value Proposition"
@@ -68,6 +89,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="valueProposition"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Unfair Advantage"
@@ -77,6 +99,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="unfairAdvantage"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Channels"
@@ -86,6 +109,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="channels"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Customer Segments"
@@ -95,6 +119,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="customerSegments"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Cost Structure"
@@ -104,6 +129,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="costStructure"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column
         title="Revenue Streams"
@@ -113,6 +139,7 @@ export function LeanTemplate({ document, cards: initialCards, comments }: LeanTe
         documentId={document.id}
         columnId="revenueStreams"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
     </div>
   );

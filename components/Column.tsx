@@ -7,9 +7,10 @@ interface ColumnProps {
   cards: Card[];
   comments: CardComment[];
   className?: string;
-  documentId: string;  // Add this prop
-  columnId: string;    // Add this prop
+  documentId: string;
+  columnId: string;
   onCardCreated: () => Promise<void>;
+  onCommentsUpdated: () => Promise<void>;
 }
 
 export function Column({ 
@@ -19,7 +20,8 @@ export function Column({
   className,
   documentId,
   columnId,
-  onCardCreated 
+  onCardCreated,
+  onCommentsUpdated
 }: ColumnProps) {
   return (
     <div className={`p-4 rounded-lg border ${className}`}>
@@ -30,6 +32,7 @@ export function Column({
             key={card.id} 
             card={card}
             comments={comments}
+            onCommentsUpdated={onCommentsUpdated}
           />
         ))}
       </div>

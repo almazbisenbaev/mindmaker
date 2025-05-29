@@ -1,12 +1,18 @@
+import { useState } from 'react';
 import { Card, CardComment } from '@/types';
 import { CommentItem } from './CommentItem';
+import { CreateCommentForm } from './CreateCommentForm';
+import { Button } from './ui/button';
+import { MessageSquarePlus } from 'lucide-react';
 
 interface CardItemProps {
   card: Card;
   comments: CardComment[];
+  onCommentsUpdated: () => Promise<void>;
 }
 
-export function CardItem({ card, comments }: CardItemProps) {
+export function CardItem({ card, comments, onCommentsUpdated }: CardItemProps) {
+  const [isAddingComment, setIsAddingComment] = useState(false);
   const cardComments = comments.filter(c => c.card_id === card.id);
 
   return (
@@ -24,6 +30,24 @@ export function CardItem({ card, comments }: CardItemProps) {
             ))}
           </div>
         </div>
+      )}
+
+      {!isAddingComment ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mt-3 text-muted-foreground"
+          onClick={() => setIsAddingComment(true)}
+        >
+          <MessageSquarePlus className="h-4 w-4 mr-1" />
+          Add Comment
+        </Button>
+      ) : (
+        <CreateCommentForm
+          cardId={card.id}
+          onCommentCreated={onCommentsUpdated}
+          onCancel={() => setIsAddingComment(false)}
+        />
       )}
     </div>
   );

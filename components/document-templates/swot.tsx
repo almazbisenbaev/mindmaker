@@ -10,8 +10,9 @@ interface SWOTTemplateProps {
   comments: CardComment[];
 }
 
-export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTemplateProps) {
+export function SWOTTemplate({ document, cards: initialCards, comments: initialComments }: SWOTTemplateProps) {
   const [cards, setCards] = React.useState(initialCards);
+  const [comments, setComments] = React.useState(initialComments);
   const cardsByColumn = useCardsByColumn(cards);
 
   const refreshCards = async () => {
@@ -27,8 +28,25 @@ export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTe
     }
   };
 
+  const refreshComments = async () => {
+    const supabase = createClient();
+    const { data: updatedComments } = await supabase
+      .from('comments')
+      .select('*')
+      .in('card_id', cards.map(card => card.id))
+      .order('created_at');
+
+    if (updatedComments) {
+      setComments(updatedComments);
+    }
+  };
+
   const handleCardCreated = async () => {
     await refreshCards();
+  };
+
+  const handleCommentsUpdated = async () => {
+    await refreshComments();
   };
 
   return (
@@ -41,6 +59,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTe
         documentId={document.id}
         columnId="strengths"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column 
         title="Weaknesses" 
@@ -50,6 +69,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTe
         documentId={document.id}
         columnId="weaknesses"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column 
         title="Opportunities" 
@@ -59,6 +79,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTe
         documentId={document.id}
         columnId="opportunities"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
       <Column 
         title="Threats" 
@@ -68,6 +89,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTe
         documentId={document.id}
         columnId="threats"
         onCardCreated={handleCardCreated}
+        onCommentsUpdated={handleCommentsUpdated}
       />
     </div>
   );
