@@ -20,11 +20,10 @@ export function CreateCommentForm({ cardId, onCommentCreated, onCancel }: Create
     const supabase = createClient();
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error('User not authenticated');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
 
       const { error } = await supabase
         .from('comments')
@@ -32,7 +31,7 @@ export function CreateCommentForm({ cardId, onCommentCreated, onCancel }: Create
           card_id: cardId,
           content: content.trim(),
           user_id: user.id,
-          created_at: new Date().toISOString(), // Explicitly set created_at
+          created_at: new Date().toISOString(),
         });
 
       if (error) throw error;
