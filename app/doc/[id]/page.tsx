@@ -4,9 +4,18 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
 import { Document, Card, CardComment } from '@/types';
 import { templates, TemplateType } from "@/components/document-templates/index";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label"
 
 interface TemplateRendererProps {
   document: Document;
@@ -23,7 +32,6 @@ const TemplateRenderer = ({ document, cards, comments }: TemplateRendererProps) 
   return <Template document={document} cards={cards} comments={comments} />;
 };
 
-
 export default function DocumentPage() {
   const [document, setDocument] = useState<Document | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
@@ -31,9 +39,36 @@ export default function DocumentPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
 
   const params = useParams();
   const documentId = params.id;
+
+  const updateDocumentStatus = async (status: 'private' | 'public') => {
+    const supabase = createClient();
+    
+    try {
+      const response = await fetch('/api/documents', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: documentId,
+          status
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update document status');
+      }
+
+      const updatedDocument = await response.json();
+      setDocument(updatedDocument);
+      toast.success(`Document visibility changed to ${status}`);
+    } catch (error) {
+      console.error('Error updating document status:', error);
+      toast.error('Failed to update document visibility');
+    }
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -71,6 +106,9 @@ export default function DocumentPage() {
           return;
         }
 
+        // Check if user is the owner
+        setIsOwner(user?.id === documentResponse.data.user_id);
+
         if (cardsResponse.error) {
           setError(cardsResponse.error.message);
           return;
@@ -93,7 +131,6 @@ export default function DocumentPage() {
             return;
           }
 
-          console.log('Fetched comments:', commentsResponse.data); // Debug log
           setComments(commentsResponse.data || []);
         }
 
@@ -116,18 +153,40 @@ export default function DocumentPage() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl text-center mb-8">Document Details</h2>
-      
-      {document && (
+    <>
+      <Toaster />
+      <div className="p-6">
         <div className="max-w-6xl mx-auto">
-          <TemplateRenderer 
-            document={document} 
-            cards={cards} 
-            comments={comments}  // Verify this is present
-          />
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl">{document?.title}</h2>
+            {isOwner && (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="status">Visibility</Label>
+                <Select 
+                  defaultValue={document?.status} 
+                  onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select visibility" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="public">Public</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          
+          {document && (
+            <TemplateRenderer 
+              document={document} 
+              cards={cards} 
+              comments={comments}
+            />
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
