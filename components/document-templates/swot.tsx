@@ -2,15 +2,34 @@ import React from 'react';
 import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
 import { useCardsByColumn } from '@/hooks/useCardsByColumn';
+import { createClient } from '@/utils/supabase/client';
 
 interface SWOTTemplateProps {
   document: Document;
   cards: Card[];
-  comments: CardComment[];  // Updated to CardComment
+  comments: CardComment[];
 }
 
-export function SWOTTemplate({ document, cards, comments }: SWOTTemplateProps) {
+export function SWOTTemplate({ document, cards: initialCards, comments }: SWOTTemplateProps) {
+  const [cards, setCards] = React.useState(initialCards);
   const cardsByColumn = useCardsByColumn(cards);
+
+  const refreshCards = async () => {
+    const supabase = createClient();
+    const { data: updatedCards } = await supabase
+      .from('cards')
+      .select('*')
+      .eq('document_id', document.id)
+      .order('position');
+
+    if (updatedCards) {
+      setCards(updatedCards);
+    }
+  };
+
+  const handleCardCreated = async () => {
+    await refreshCards();
+  };
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -19,24 +38,36 @@ export function SWOTTemplate({ document, cards, comments }: SWOTTemplateProps) {
         cards={cardsByColumn.strengths || []} 
         comments={comments}
         className="bg-green-50"
+        documentId={document.id}
+        columnId="strengths"
+        onCardCreated={handleCardCreated}
       />
       <Column 
         title="Weaknesses" 
         cards={cardsByColumn.weaknesses || []} 
         comments={comments}
         className="bg-red-50"
+        documentId={document.id}
+        columnId="weaknesses"
+        onCardCreated={handleCardCreated}
       />
       <Column 
         title="Opportunities" 
         cards={cardsByColumn.opportunities || []} 
         comments={comments}
         className="bg-blue-50"
+        documentId={document.id}
+        columnId="opportunities"
+        onCardCreated={handleCardCreated}
       />
       <Column 
         title="Threats" 
         cards={cardsByColumn.threats || []} 
         comments={comments}
         className="bg-yellow-50"
+        documentId={document.id}
+        columnId="threats"
+        onCardCreated={handleCardCreated}
       />
     </div>
   );

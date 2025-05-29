@@ -1,14 +1,26 @@
 import { Card, CardComment } from '@/types';
 import { CardItem } from './CardItem';
+import { CreateCardForm } from './CreateCardForm';
 
 interface ColumnProps {
   title: string;
   cards: Card[];
   comments: CardComment[];
   className?: string;
+  documentId: string;  // Add this prop
+  columnId: string;    // Add this prop
+  onCardCreated: () => Promise<void>;
 }
 
-export function Column({ title, cards, comments, className }: ColumnProps) {
+export function Column({ 
+  title, 
+  cards, 
+  comments, 
+  className,
+  documentId,
+  columnId,
+  onCardCreated 
+}: ColumnProps) {
   return (
     <div className={`p-4 rounded-lg border ${className}`}>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
@@ -21,6 +33,11 @@ export function Column({ title, cards, comments, className }: ColumnProps) {
           />
         ))}
       </div>
+      <CreateCardForm 
+        documentId={documentId}
+        columnId={columnId}
+        onCardCreated={onCardCreated}
+      />
     </div>
   );
 }

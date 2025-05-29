@@ -1,6 +1,8 @@
 import React from 'react';
-import { Document, Card, CardComment, LeanColumnId, isLeanColumnId } from '@/types';
+import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
+import { useCardsByColumn } from '@/hooks/useCardsByColumn';
+import { createClient } from '@/utils/supabase/client';
 
 interface LeanTemplateProps {
   document: Document;
@@ -8,121 +10,110 @@ interface LeanTemplateProps {
   comments: CardComment[];
 }
 
-export function LeanTemplate({ document, cards, comments }: LeanTemplateProps) {
-  // Filter cards to only include those with valid Lean columns
-  const leanCards = cards.filter(card => isLeanColumnId(card.column_id));
+export function LeanTemplate({ document, cards: initialCards, comments }: LeanTemplateProps) {
+  const [cards, setCards] = React.useState(initialCards);
+  const cardsByColumn = useCardsByColumn(cards);
 
-  const cardsByColumn = leanCards.reduce((acc, card) => {
-    const columnId = card.column_id as LeanColumnId;
-    if (!acc[columnId]) {
-      acc[columnId] = [];
+  const refreshCards = async () => {
+    const supabase = createClient();
+    const { data: updatedCards } = await supabase
+      .from('cards')
+      .select('*')
+      .eq('document_id', document.id)
+      .order('position');
+
+    if (updatedCards) {
+      setCards(updatedCards);
     }
-    acc[columnId].push(card);
-    return acc;
-  }, {} as Record<LeanColumnId, Card[]>);
+  };
 
-  // Sort cards by position
-  Object.values(cardsByColumn).forEach(columnCards => {
-    columnCards.sort((a, b) => a.position - b.position);
-  });
+  const handleCardCreated = async () => {
+    await refreshCards();
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Problem */}
-      <Column 
-        title="Problem" 
+    <div className="grid grid-cols-3 gap-4">
+      <Column
+        title="Problem"
         cards={cardsByColumn.problem || []}
-        comments={comments}  // Add this
+        comments={comments}
         className="bg-red-50"
+        documentId={document.id}
+        columnId="problem"
+        onCardCreated={handleCardCreated}
       />
-
-      {/* Solution */}
-      <Column 
-        title="Solution" 
+      <Column
+        title="Solution"
         cards={cardsByColumn.solution || []}
-        comments={comments}  // Add this
+        comments={comments}
         className="bg-green-50"
+        documentId={document.id}
+        columnId="solution"
+        onCardCreated={handleCardCreated}
       />
-
-      {/* Metrics */}
-      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Key Metrics</h3>
-        <div className="space-y-2">
-          {cardsByColumn.metrics?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Unique Value Proposition */}
-      <Column 
-        title="Unique Value Proposition" 
-        cards={cardsByColumn.value_proposition || []}
-        comments={comments}  // Add this
-        className="bg-purple-50 md:col-span-3"
+      <Column
+        title="Metrics"
+        cards={cardsByColumn.metrics || []}
+        comments={comments}
+        className="bg-blue-50"
+        documentId={document.id}
+        columnId="metrics"
+        onCardCreated={handleCardCreated}
       />
-      
-      {/* Unfair Advantage */}
-      <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Unfair Advantage</h3>
-        <div className="space-y-2">
-          {cardsByColumn.unfair_advantage?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Channels */}
-      <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-        <h3 className="text-lg font-semibold text-indigo-800 mb-2">Channels</h3>
-        <div className="space-y-2">
-          {cardsByColumn.channels?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Customer Segments */}
-      <div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-        <h3 className="text-lg font-semibold text-pink-800 mb-2">Customer Segments</h3>
-        <div className="space-y-2">
-          {cardsByColumn.customer_segments?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cost Structure */}
-      <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 md:col-span-2">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Cost Structure</h3>
-        <div className="space-y-2">
-          {cardsByColumn.cost_structure?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Revenue Streams */}
-      <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-        <h3 className="text-lg font-semibold text-emerald-800 mb-2">Revenue Streams</h3>
-        <div className="space-y-2">
-          {cardsByColumn.revenue_streams?.map((card) => (
-            <div key={card.id} className="p-2 bg-white rounded shadow">
-              {card.content}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Column
+        title="Value Proposition"
+        cards={cardsByColumn.valueProposition || []}
+        comments={comments}
+        className="bg-purple-50"
+        documentId={document.id}
+        columnId="valueProposition"
+        onCardCreated={handleCardCreated}
+      />
+      <Column
+        title="Unfair Advantage"
+        cards={cardsByColumn.unfairAdvantage || []}
+        comments={comments}
+        className="bg-yellow-50"
+        documentId={document.id}
+        columnId="unfairAdvantage"
+        onCardCreated={handleCardCreated}
+      />
+      <Column
+        title="Channels"
+        cards={cardsByColumn.channels || []}
+        comments={comments}
+        className="bg-indigo-50"
+        documentId={document.id}
+        columnId="channels"
+        onCardCreated={handleCardCreated}
+      />
+      <Column
+        title="Customer Segments"
+        cards={cardsByColumn.customerSegments || []}
+        comments={comments}
+        className="bg-pink-50"
+        documentId={document.id}
+        columnId="customerSegments"
+        onCardCreated={handleCardCreated}
+      />
+      <Column
+        title="Cost Structure"
+        cards={cardsByColumn.costStructure || []}
+        comments={comments}
+        className="bg-gray-50"
+        documentId={document.id}
+        columnId="costStructure"
+        onCardCreated={handleCardCreated}
+      />
+      <Column
+        title="Revenue Streams"
+        cards={cardsByColumn.revenueStreams || []}
+        comments={comments}
+        className="bg-orange-50"
+        documentId={document.id}
+        columnId="revenueStreams"
+        onCardCreated={handleCardCreated}
+      />
     </div>
   );
 }
