@@ -27,7 +27,7 @@ async function AuthButton() {
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 h-auto p-2 rounded-full">
+        <Button variant="ghost" className="flex items-center gap-2 h-auto p-2 focus-visible:ring-0 focus-visible:ring-offset-0">
           {profile?.avatar_url && (
             <img 
               src={profile.avatar_url}
