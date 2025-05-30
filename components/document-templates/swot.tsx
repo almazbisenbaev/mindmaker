@@ -50,7 +50,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div id="document-content" className="grid grid-cols-2 gap-4">
       <Column 
         title="Strengths" 
         cards={cardsByColumn.strengths || []} 

@@ -50,7 +50,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div id="document-content" className="grid grid-cols-3 gap-4">
       <Column
         title="Problem"
         cards={cardsByColumn.problem || []}

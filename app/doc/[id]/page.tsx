@@ -8,6 +8,7 @@ import { Document, Card, CardComment } from '@/types';
 import { templates, TemplateType } from "@/components/document-templates/index";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { exportAsPNG } from "@/utils/export";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 interface TemplateRendererProps {
   document: Document;
@@ -189,20 +192,37 @@ export default function DocumentPage() {
               </div>
             </div>
             {isOwner && (
-              <div className="flex items-center gap-2">
-                <Label htmlFor="status">Visibility</Label>
-                <Select 
-                  defaultValue={document?.status} 
-                  onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="status">Visibility</Label>
+                  <Select 
+                    defaultValue={document?.status}
+                    onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Select visibility" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="private">Private</SelectItem>
+                      <SelectItem value="public">Public</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    try {
+                      exportAsPNG('document-content', document?.title || 'document-export');
+                      toast.success('Document exported successfully');
+                    } catch (error) {
+                      toast.error('Failed to export document');
+                      console.error(error);
+                    }
+                  }}
                 >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select visibility" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="private">Private</SelectItem>
-                    <SelectItem value="public">Public</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export as PNG
+                </Button>
               </div>
             )}
           </div>
