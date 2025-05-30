@@ -36,6 +36,7 @@ export default function DocumentPage() {
   const [document, setDocument] = useState<Document | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [comments, setComments] = useState<CardComment[]>([]);
+  const [author, setAuthor] = useState<{ username?: string, avatar_url?: string, email?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -109,6 +110,22 @@ export default function DocumentPage() {
         // Check if user is the owner
         setIsOwner(user?.id === documentResponse.data.user_id);
 
+        // Fetch author's profile
+        const { data: authorProfile } = await supabase
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('id', documentResponse.data.user_id)
+          .single();
+        
+        // Get author's email as fallback
+        const { data: { user: author } } = await supabase.auth.admin.getUserById(documentResponse.data.user_id);
+        
+        setAuthor({
+          username: authorProfile?.username,
+          avatar_url: authorProfile?.avatar_url,
+          email: author?.email
+        });
+
         if (cardsResponse.error) {
           setError(cardsResponse.error.message);
           return;
@@ -158,7 +175,19 @@ export default function DocumentPage() {
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl">{document?.title}</h2>
+            <div>
+              <h2 className="text-2xl mb-2">{document?.title}</h2>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                {author?.avatar_url && (
+                  <img 
+                    src={author.avatar_url}
+                    alt="Author's avatar"
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                )}
+                <span>By {author?.username || author?.email}</span>
+              </div>
+            </div>
             {isOwner && (
               <div className="flex items-center gap-2">
                 <Label htmlFor="status">Visibility</Label>
