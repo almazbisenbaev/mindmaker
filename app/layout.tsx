@@ -1,13 +1,11 @@
-import DeployButton from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import Image from "next/image";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,18 +37,30 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex flex-col items-center">
+
             <div className="flex-1 w-full flex flex-col gap-20 items-center">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
-                    </div>
+
+              <nav className="w-full border-b border-b-foreground/10">
+                <div className="container mx-auto px-4 text-sm">
+                  <div className="flex items-center gap-6 py-4">
+
+                    <Link href={"/"}>
+                      <Image 
+                        src="/images/logo.svg" 
+                        width={136} 
+                        height={38}
+                        alt="Mindmaker"
+                      />
+                    </Link>
+
+                    <div className="flex-1">Menu goes here</div>
+
+                    <HeaderAuth />
+
                   </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                 </div>
               </nav>
+
               <div className="flex flex-col gap-20 max-w-5xl p-5">
                 {children}
               </div>
@@ -70,6 +80,7 @@ export default function RootLayout({
                 <ThemeSwitcher />
               </footer>
             </div>
+
           </main>
           <Toaster />
         </ThemeProvider>
