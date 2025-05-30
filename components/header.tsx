@@ -2,130 +2,125 @@ import * as React from "react"
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils"
+import { Menu } from "lucide-react"
 
 import HeaderAuth from "@/components/header-auth";
 
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu"
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu"
 
+import { Button } from "@/components/ui/button"
 
 export default function Header() {
+  return (
+    <nav className="w-full border-b border-b-foreground/10">
+      <div className="container mx-auto px-4 text-sm">
+        <div className="flex items-center justify-between py-4">
+          
+          {/* Logo */}
+          <Link href={"/"} className="flex-shrink-0">
+            <Image 
+              src="/images/logo.svg" 
+              width={120} 
+              height={34}
+              alt="Mindmaker"
+            />
+          </Link>
 
-    return (
-        <nav className="w-full border-b border-b-foreground/10">
-            <div className="container mx-auto px-4 text-sm">
-                <div className="flex items-center gap-6 py-4">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex flex-1 justify-center">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link href="/dashboard" passHref>
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      Dashboard
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/about" passHref>
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      About Mindmaker
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/blog" passHref>
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      What's new?
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
 
-                <Link href={"/"}>
-                    <Image 
-                    src="/images/logo.svg" 
-                    width={136} 
-                    height={38}
-                    alt="Mindmaker"
-                    />
-                </Link>
+          {/* Right side: HeaderAuth + Mobile menu */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <HeaderAuth />
+            
+            {/* Mobile Menu Dropdown - Only visible on mobile */}
+            <div className="md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
 
-                <div className="flex-1">
-                    <NavigationMenu>
-                    <NavigationMenuList>
-                        <NavigationMenuItem>
-                        <Link href="/dashboard" passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            Dashboard
-                            </NavigationMenuLink>
-                        </Link>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                        <Link href="/about" passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            About Mindmaker
-                            </NavigationMenuLink>
-                        </Link>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                        <Link href="/blog" passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            What's new?
-                            </NavigationMenuLink>
-                        </Link>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-                          <NavigationMenuContent>
-                              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                              {components.map((component) => (
-                                  <ListItem
-                                  key={component.title}
-                                  title={component.title}
-                                  href={component.href}
-                                  >
-                                  {component.description}
-                                  </ListItem>
-                              ))}
-                              </ul>
-                          </NavigationMenuContent>
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
-                    </NavigationMenu>
-                </div>
+                  <DropdownMenuLabel>Menu</DropdownMenuLabel>
 
-                <HeaderAuth />
+                  <DropdownMenuSeparator />
 
-                </div>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="w-full">
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/about" className="w-full">
+                      About Mindmaker
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/blog" className="w-full">
+                      What's new?
+                    </Link>
+                  </DropdownMenuItem>
+
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-        </nav>
-    )
-
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
 }
-
-
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
