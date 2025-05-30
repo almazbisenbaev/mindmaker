@@ -27,15 +27,15 @@ async function AuthButton() {
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
+        <Button variant="ghost" className="flex items-center gap-2 h-auto p-2 rounded-full">
           {profile?.avatar_url && (
             <img 
               src={profile.avatar_url}
               alt="Avatar"
-              className="w-8 h-8 rounded-full"
+              className="w-7 h-7 rounded-full object-cover"
             />
           )}
-          <span>{profile?.username || user.email}</span>
+          <span className="hidden md:inline">{profile?.username || user.email}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
