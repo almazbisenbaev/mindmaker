@@ -8,9 +8,10 @@ interface SWOTTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
+  isExporting?: boolean;
 }
 
-export function SWOTTemplate({ document, cards: initialCards, comments: initialComments }: SWOTTemplateProps) {
+export function SWOTTemplate({ document, cards: initialCards, comments: initialComments, isExporting = false }: SWOTTemplateProps) {
   const [cards, setCards] = React.useState(initialCards);
   const [comments, setComments] = React.useState(initialComments);
   const cardsByColumn = useCardsByColumn(cards);
@@ -60,6 +61,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         columnId="strengths"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column 
         title="Weaknesses" 
@@ -70,6 +72,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         columnId="weaknesses"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column 
         title="Opportunities" 
@@ -80,6 +83,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         columnId="opportunities"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column 
         title="Threats" 
@@ -90,6 +94,7 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         columnId="threats"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
     </div>
   );

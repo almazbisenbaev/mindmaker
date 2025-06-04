@@ -8,9 +8,10 @@ interface LeanTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
+  isExporting?: boolean;
 }
 
-export function LeanTemplate({ document, cards: initialCards, comments: initialComments }: LeanTemplateProps) {
+export function LeanTemplate({ document, cards: initialCards, comments: initialComments, isExporting = false }: LeanTemplateProps) {
   const [cards, setCards] = React.useState(initialCards);
   const [comments, setComments] = React.useState(initialComments);
   const cardsByColumn = useCardsByColumn(cards);
@@ -60,6 +61,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="problem"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Solution"
@@ -70,6 +72,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="solution"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Metrics"
@@ -80,6 +83,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="metrics"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Value Proposition"
@@ -90,6 +94,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="valueProposition"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Unfair Advantage"
@@ -100,6 +105,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="unfairAdvantage"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Channels"
@@ -110,6 +116,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="channels"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Customer Segments"
@@ -120,6 +127,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="customerSegments"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Cost Structure"
@@ -130,6 +138,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="costStructure"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
       <Column
         title="Revenue Streams"
@@ -140,6 +149,7 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         columnId="revenueStreams"
         onCardCreated={handleCardCreated}
         onCommentsUpdated={handleCommentsUpdated}
+        isExporting={isExporting}
       />
     </div>
   );

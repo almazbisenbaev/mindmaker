@@ -13,6 +13,7 @@ interface ColumnProps {
   columnId: string;
   onCardCreated: () => Promise<void>;
   onCommentsUpdated: () => Promise<void>;
+  isExporting?: boolean;
 }
 
 export function Column({ 
@@ -23,7 +24,8 @@ export function Column({
   documentId,
   columnId,
   onCardCreated,
-  onCommentsUpdated
+  onCommentsUpdated,
+  isExporting = false
 }: ColumnProps) {
   const [showForm, setShowForm] = useState(false);
 
@@ -37,6 +39,7 @@ export function Column({
             card={card}
             comments={comments}
             onCommentsUpdated={onCommentsUpdated}
+            isExporting={isExporting}
           />
         ))}
       </div>
@@ -49,14 +52,16 @@ export function Column({
         />
       )}
       
-      <Button
-        onClick={() => setShowForm(true)}
-        className="w-full mt-4"
-        size="sm"
-        variant="outline"
-      >
-        Add Card
-    </Button>
+      {!isExporting && (
+        <Button
+          onClick={() => setShowForm(true)}
+          className="w-full mt-4"
+          size="sm"
+          variant="outline"
+        >
+          Add Card
+        </Button>
+      )}
 
     </div>
   );

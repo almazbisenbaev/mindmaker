@@ -12,9 +12,10 @@ interface CardItemProps {
   card: Card;
   comments: CardComment[];
   onCommentsUpdated: () => Promise<void>;
+  isExporting?: boolean;
 }
 
-export function CardItem({ card, comments, onCommentsUpdated }: CardItemProps) {
+export function CardItem({ card, comments, onCommentsUpdated, isExporting = false }: CardItemProps) {
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const cardComments = comments.filter(c => c.card_id === card.id);
@@ -54,7 +55,7 @@ export function CardItem({ card, comments, onCommentsUpdated }: CardItemProps) {
         </div>
       )}
 
-      {!isAddingComment ? (
+      {!isExporting && !isAddingComment ? (
         user ? (
           <Button
             variant="ghost"
@@ -70,7 +71,7 @@ export function CardItem({ card, comments, onCommentsUpdated }: CardItemProps) {
             <Link href="/sign-in" className="text-primary hover:underline">Sign in</Link> to leave a comment.
           </div>
         ) : null
-      ) : (
+      ) : !isExporting && (
         <CreateCommentForm
           cardId={card.id}
           onCommentCreated={onCommentsUpdated}

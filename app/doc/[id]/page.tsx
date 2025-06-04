@@ -24,15 +24,16 @@ interface TemplateRendererProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
+  isExporting?: boolean;
 }
 
-const TemplateRenderer = ({ document, cards, comments }: TemplateRendererProps) => {
+const TemplateRenderer = ({ document, cards, comments, isExporting }: TemplateRendererProps) => {
   if (!(document.template in templates)) {
     return <div className="text-red-500">Unknown template type: {document.template}</div>;
   }
   
   const Template = templates[document.template];
-  return <Template document={document} cards={cards} comments={comments} />;
+  return <Template document={document} cards={cards} comments={comments} isExporting={isExporting} />;
 };
 
 export default function DocumentPage() {
@@ -44,6 +45,7 @@ export default function DocumentPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   const params = useParams();
   const documentId = params.id;
@@ -175,66 +177,71 @@ export default function DocumentPage() {
   return (
     <>
       <Toaster />
-      <div className="p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl mb-2">{document?.title}</h2>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {author?.avatar_url && (
-                  <img 
-                    src={author.avatar_url}
-                    alt="Author's avatar"
-                    className="w-6 h-6 rounded-full object-cover"
-                  />
-                )}
-                <span>By {author?.username || author?.email}</span>
-              </div>
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl mb-2">{document?.title}</h2>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              {author?.avatar_url && (
+                <img 
+                  src={author.avatar_url}
+                  alt="Author's avatar"
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+              )}
+              <span>By {author?.username || author?.email}</span>
             </div>
-            {isOwner && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="status">Visibility</Label>
-                  <Select 
-                    defaultValue={document?.status}
-                    onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
-                  >
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Select visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="private">Private</SelectItem>
-                      <SelectItem value="public">Public</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    try {
-                      exportAsPNG('document-content', document?.title || 'document-export');
-                      toast.success('Document exported successfully');
-                    } catch (error) {
-                      toast.error('Failed to export document');
-                      console.error(error);
-                    }
-                  }}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export as PNG
-                </Button>
-              </div>
-            )}
           </div>
-          
-          {document && (
-            <TemplateRenderer 
-              document={document} 
-              cards={cards} 
-              comments={comments}
-            />
+          {isOwner && (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="status">Visibility</Label>
+                <Select 
+                  defaultValue={document?.status}
+                  onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select visibility" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="public">Public</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={async () => {
+                  try {
+                    // Temporarily set isExporting to true
+                    setIsExporting(true);
+                    // Wait for state to update
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await exportAsPNG('document-content', document?.title || 'document-export');
+                    toast.success('Document exported successfully');
+                  } catch (error) {
+                    toast.error('Failed to export document');
+                    console.error(error);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export as PNG
+              </Button>
+            </div>
           )}
         </div>
+        
+        {document && (
+          <TemplateRenderer 
+            document={document} 
+            cards={cards} 
+            comments={comments}
+            isExporting={isExporting}
+          />
+        )}
       </div>
     </>
   );
