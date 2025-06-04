@@ -30,9 +30,11 @@ export function Column({
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <div className={`p-4 rounded-lg border ${className} relative`}>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <div className="space-y-2">
+    <div className={`p-8 rounded-xl ${className} relative`}>
+
+      <h3 className="text-md font-semibold mb-5 transform uppercase">{title}</h3>
+
+      <div className="space-y-3">
         {cards.map(card => (
           <CardItem 
             key={card.id} 
@@ -43,6 +45,7 @@ export function Column({
           />
         ))}
       </div>
+
       {showForm && (
         <CreateCardForm 
           documentId={documentId}
@@ -55,9 +58,9 @@ export function Column({
       {!isExporting && (
         <Button
           onClick={() => setShowForm(true)}
-          className="w-full mt-4"
+          className="w-full mt-4 hover:bg-white"
           size="sm"
-          variant="outline"
+          variant="ghost"
         >
           Add Card
         </Button>

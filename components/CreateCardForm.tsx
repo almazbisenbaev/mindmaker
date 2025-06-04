@@ -56,7 +56,7 @@ export function CreateCardForm({ documentId, columnId, onCardCreated, onClose }:
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t shadow-lg rounded-b-lg">
+    <div className="absolute bottom-2 left-2 right-2 bg-white p-4 border-t shadow-lg rounded-xl">
       <form onSubmit={handleSubmit}>
         <textarea
           value={content}
