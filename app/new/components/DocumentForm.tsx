@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import {
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { TemplateCard } from './TemplateCard'
 
 const documentSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -24,13 +25,14 @@ type DocumentFormData = z.infer<typeof documentSchema>
 
 export default function DocumentForm() {
   const router = useRouter()
-  const { register, handleSubmit, formState: { errors, isSubmitting }, control, setValue } = useForm<DocumentFormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, control, setValue, watch } = useForm<DocumentFormData>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
       template: 'swot',
       status: 'private'
     }
   })
+  const watchTemplate = watch('template', 'swot')
 
   const onSubmit = async (data: DocumentFormData) => {
     try {
@@ -50,7 +52,7 @@ export default function DocumentForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl mx-auto space-y-4">
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <input
@@ -77,22 +79,38 @@ export default function DocumentForm() {
 
       <div className="space-y-2">
         <Label htmlFor="template">Template</Label>
-        <Select defaultValue="swot" onValueChange={(value) => setValue('template', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a template" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="swot">SWOT Analysis</SelectItem>
-            <SelectItem value="lean">Lean Canvas</SelectItem>
-            <SelectItem value="pestel">PESTEL Analysis</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <TemplateCard
+            id="swot"
+            name="SWOT Analysis"
+            description="Analyze strengths, weaknesses, opportunities, and threats"
+            icon="/images/illustr-swot.png"
+            isSelected={watchTemplate === 'swot'}
+            onSelect={(id) => setValue('template', id)}
+          />
+          <TemplateCard
+            id="lean"
+            name="Lean Canvas"
+            description="Visualize your business model and strategy"
+            icon="/images/illustr-swot.png"
+            isSelected={watchTemplate === 'lean'}
+            onSelect={(id) => setValue('template', id)}
+          />
+          <TemplateCard
+            id="pestel"
+            name="PESTEL Analysis"
+            description="Analyze external macro-environmental factors"
+            icon="/images/illustr-swot.png"
+            isSelected={watchTemplate === 'pestel'}
+            onSelect={(id) => setValue('template', id)}
+          />
+        </div>
         {errors.template && (
           <p className="text-sm text-red-500">{errors.template.message}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <Label htmlFor="status">Visibility</Label>
         <Select 
           defaultValue="private" 
@@ -106,7 +124,7 @@ export default function DocumentForm() {
             <SelectItem value="public">Public</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       <button
         type="submit"
