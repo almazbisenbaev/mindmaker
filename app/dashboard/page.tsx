@@ -57,44 +57,49 @@ export default function DashboardPage() {
 
   return (
     <>
-      <h2 className="text-2xl text-center flex items-center justify-center">Dashboard page</h2>
-      
+      <div className="container mx-auto py-12">
+        <h2 className="text-2xl">My documents</h2>
+      </div>
+
+      <div className="container mx-auto pb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {documents.map((doc) => (
+            <div 
+              key={doc.id} 
+              className="bg-white p-10 rounded-3xl border border-gray-200"
+            >
+
+              <div className="min-h-[100px]">
+                <h3 className="text-lg font-semibold mb-2">{doc.title}</h3>
+                {doc.description && (
+                  <p className="mt-2 text-sm text-gray-600">{doc.description}</p>
+                )}
+              </div>
+
+                <div className="flex gap-2 text-sm text-gray-500 mb-2">
+                  {doc.template}
+                  <span>•</span>
+                  {doc.status}
+                  <span>•</span>
+                  {new Date(doc.created_at).toLocaleDateString()}
+                </div>
+
+                <Button
+                  onClick={() => router.push(`/doc/${doc.id}`)}
+                  className="mt-4 w-full bg-gray-100 hover:bg-neutral-200"
+                  variant="ghost"
+                >
+                  View document
+                </Button>
+
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* <pre className="mt-4 p-4 bg-gray-100 rounded">
         {JSON.stringify(documents, null, 2)}
       </pre> */}
-
-      <div className="flex">
-        {documents.map((doc) => (
-          <div 
-            key={doc.id} 
-            className="bg-white p-4 rounded-lg border border-gray-200"
-          >
-            <h3 className="text-lg font-semibold mb-2">{doc.title}</h3>
-            <div className="text-sm text-gray-500 mb-2">
-              Template: {doc.template}
-            </div>
-            <div className="flex justify-between items-center">
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                doc.status === 'public' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
-                {doc.status}
-              </span>
-              <span className="text-xs text-gray-500">
-                {new Date(doc.created_at).toLocaleDateString()}
-              </span>
-            </div>
-            {doc.description && (
-              <p className="mt-2 text-sm text-gray-600">{doc.description}</p>
-            )}
-            <Button
-              onClick={() => router.push(`/doc/${doc.id}`)}
-              className="mt-4 w-full"
-            >
-              View document
-            </Button>
-          </div>
-        ))}
-      </div>
 
     </>
   );

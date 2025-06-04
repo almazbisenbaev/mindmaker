@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -31,13 +30,11 @@ export default function RootLayout({
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
 
-        <main className="min-h-screen flex flex-col items-center">
+        <main>
 
           <Header />
 
           {children}
-
-          <Footer />
 
         </main>
         
