@@ -199,6 +199,12 @@ export default function Header() {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link href="/new">New analysis</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                     <Link href="/blog">What's new?</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

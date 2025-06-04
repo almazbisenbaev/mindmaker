@@ -84,6 +84,7 @@ export default function DocumentForm() {
           <SelectContent>
             <SelectItem value="swot">SWOT Analysis</SelectItem>
             <SelectItem value="lean">Lean Canvas</SelectItem>
+            <SelectItem value="pestel">PESTEL Analysis</SelectItem>
           </SelectContent>
         </Select>
         {errors.template && (

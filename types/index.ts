@@ -11,12 +11,20 @@ export type LeanColumnId =
   | 'cost_structure'
   | 'revenue_streams';
 
-export type ColumnId = SWOTColumnId | LeanColumnId;
+export type PESTELColumnId =
+  | 'political'
+  | 'economic'
+  | 'social'
+  | 'technological'
+  | 'environmental'
+  | 'legal';
+
+export type ColumnId = SWOTColumnId | LeanColumnId | PESTELColumnId;
 
 export interface Document {
   id: string;
   user_id: string;
-  template: 'swot' | 'lean';
+  template: 'swot' | 'lean' | 'pestel';
   title: string;
   status: 'public' | 'private';
   created_at: string;
@@ -58,6 +66,18 @@ export const isSWOTColumnId = (columnId: ColumnId): columnId is SWOTColumnId => 
     'threats'
   ];
   return swotColumns.includes(columnId as SWOTColumnId);
+};
+
+export const isPESTELColumnId = (columnId: string): columnId is PESTELColumnId => {
+  const pestelColumns: PESTELColumnId[] = [
+    'political',
+    'economic',
+    'social',
+    'technological',
+    'environmental',
+    'legal'
+  ];
+  return pestelColumns.includes(columnId as PESTELColumnId);
 };
 
 
