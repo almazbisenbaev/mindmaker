@@ -6,9 +6,10 @@ interface CreateCardFormProps {
   documentId: string;
   columnId: string;
   onCardCreated: () => void;
+  onClose: () => void;
 }
 
-export function CreateCardForm({ documentId, columnId, onCardCreated }: CreateCardFormProps) {
+export function CreateCardForm({ documentId, columnId, onCardCreated, onClose }: CreateCardFormProps) {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,6 +47,7 @@ export function CreateCardForm({ documentId, columnId, onCardCreated }: CreateCa
       // Clear form and notify parent
       setContent('');
       await onCardCreated(); // Make sure to await the callback
+      onClose(); // Close the form after successful submission
     } catch (error) {
       console.error('Error creating card:', error);
     } finally {
@@ -54,23 +56,36 @@ export function CreateCardForm({ documentId, columnId, onCardCreated }: CreateCa
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a new card..."
-        className="w-full p-2 text-sm border rounded-md resize-none"
-        rows={3}
-        disabled={isSubmitting}
-      />
-      <Button
-        type="submit"
-        disabled={isSubmitting || !content.trim()}
-        className="w-full mt-2"
-        size="sm"
-      >
-        {isSubmitting ? 'Adding...' : 'Add Card'}
-      </Button>
-    </form>
+    <div className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t shadow-lg rounded-b-lg">
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Add a new card..."
+          className="w-full p-2 text-sm border rounded-md resize-none"
+          rows={3}
+          disabled={isSubmitting}
+          autoFocus
+        />
+        <div className="flex gap-2 mt-2">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !content.trim()}
+            size="sm"
+          >
+            {isSubmitting ? 'Adding...' : 'Add Card'}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
