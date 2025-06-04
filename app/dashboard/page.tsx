@@ -5,6 +5,14 @@ import { useRouter, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
+import { MoreVertical, Eye, Trash2, Link2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Define the Document interface based on your Supabase table structure
 interface Document {
@@ -19,9 +27,35 @@ interface Document {
 }
 
 export default function DashboardPage() {
+  const copyDocumentLink = async (docId: string) => {
+    const url = `${window.location.origin}/doc/${docId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard');
+    } catch (error) {
+      toast.error('Failed to copy link');
+      console.error('Failed to copy link:', error);
+    }
+  };
   const router = useRouter();
-    const [documents, setDocuments] = useState<Document[]>([]); 
-  const [user, setUser] = useState<User | null>(null); 
+  const [documents, setDocuments] = useState<Document[]>([]); 
+  const [user, setUser] = useState<User | null>(null);
+
+  const handleDelete = async (docId: string) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', docId);
+
+    if (error) {
+      console.error('Error deleting document:', error);
+      return;
+    }
+
+    // Update the documents list after deletion
+    setDocuments(documents.filter(doc => doc.id !== docId));
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -58,7 +92,7 @@ export default function DashboardPage() {
   return (
     <>
       <div className="container mx-auto py-12">
-        <h2 className="text-2xl">My documents</h2>
+        <h2 className="text-2xl font-semibold">My documents</h2>
       </div>
 
       <div className="container mx-auto pb-12">
@@ -66,8 +100,36 @@ export default function DashboardPage() {
           {documents.map((doc) => (
             <div 
               key={doc.id} 
-              className="bg-white p-10 rounded-3xl border border-gray-200"
+              className="bg-white p-10 rounded-3xl border border-gray-200 relative"
             >
+              <div className="absolute top-4 right-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => router.push(`/doc/${doc.id}`)}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      <span>View document</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => copyDocumentLink(doc.id)}
+                    >
+                      <Link2 className="mr-2 h-4 w-4" />
+                      <span>Copy link</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleDelete(doc.id)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
               <div className="min-h-[100px]">
                 <h3 className="text-lg font-semibold mb-2">{doc.title}</h3>
@@ -89,7 +151,7 @@ export default function DashboardPage() {
                   className="mt-4 w-full bg-gray-100 hover:bg-neutral-200"
                   variant="ghost"
                 >
-                  View document
+                  Open
                 </Button>
 
             </div>
