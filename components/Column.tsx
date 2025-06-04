@@ -16,6 +16,56 @@ interface ColumnProps {
   isExporting?: boolean;
 }
 
+const columnPlaceholders = {
+  // SWOT Analysis
+  strengths: "Internal factors that give you an advantage over others",
+  weaknesses: "Internal factors that put you at a disadvantage",
+  opportunities: "External factors that could be beneficial to you",
+  threats: "External factors that could cause trouble for you",
+
+  // Lean Canvas
+  problem: "What problem are you solving?",
+  solution: "How will you solve it?",
+  metrics: "How will you measure success?",
+  valueProposition: "What unique value do you offer?",
+  unfairAdvantage: "What makes you different?",
+  channels: "How will you reach customers?",
+  customerSegments: "Who are your target customers?",
+  costStructure: "What are your major costs?",
+  keyPartners: "Who are your key partners?",
+
+  // PESTEL Analysis
+  political: "How do political factors affect your business?",
+  economic: "How do economic factors affect your business?",
+  social: "How do social factors affect your business?",
+  technological: "How do technological factors affect your business?",
+  environmental: "How do environmental factors affect your business?",
+  legal: "How do legal factors affect your business?"
+};
+
+// Helper function to get placeholder text
+const getColumnPlaceholder = (columnId: string, title: string): string => {
+  // First try to get the exact match
+  const placeholder = columnPlaceholders[columnId as keyof typeof columnPlaceholders];
+  
+  // If not found, try to find a case-insensitive match
+  if (!placeholder) {
+    const lowerId = columnId.toLowerCase();
+    const lowerTitle = title.toLowerCase();
+    
+    // Try to find a matching placeholder by title
+    for (const [key, value] of Object.entries(columnPlaceholders)) {
+      if (key.toLowerCase().includes(lowerTitle) || 
+          key.toLowerCase().includes(lowerId)) {
+        return value;
+      }
+    }
+  }
+  
+  // If still not found, return a generic placeholder
+  return `Add content related to ${title}`;
+};
+
 export function Column({ 
   title, 
   cards, 
@@ -35,6 +85,11 @@ export function Column({
       <h3 className="text-md font-semibold mb-5 transform uppercase">{title}</h3>
 
       <div className="space-y-3">
+        {cards.length === 0 && !isExporting && (
+          <div className="text-sm text-muted-foreground p-4 rounded-lg bg-background/50 border border-dashed border-muted-foreground/50">
+            {getColumnPlaceholder(columnId, title)}
+          </div>
+        )}
         {cards.map(card => (
           <CardItem 
             key={card.id} 
