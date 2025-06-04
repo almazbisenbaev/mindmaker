@@ -1,11 +1,9 @@
 import * as React from "react"
 import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 import Header from "@/components/header";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -31,36 +29,31 @@ export default function RootLayout({
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="min-h-screen flex flex-col items-center">
 
-            <Header />
+        <main className="min-h-screen flex flex-col items-center">
 
-            {children}
+          <Header />
 
-            <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-              <p>
-                Powered by{" "}
-                <a
-                  href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                  target="_blank"
-                  className="font-bold hover:underline"
-                  rel="noreferrer"
-                >
-                  Supabase
-                </a>
-              </p>
-              <ThemeSwitcher />
-            </footer>
+          {children}
 
-          </main>
-          <Toaster />
-        </ThemeProvider>
+          <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+            <p>
+              Powered by{" "}
+              <a
+                href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+                target="_blank"
+                className="font-bold hover:underline"
+                rel="noreferrer"
+              >
+                Supabase
+              </a>
+            </p>
+          </footer>
+
+        </main>
+        
+        <Toaster />
+
       </body>
     </html>
   );
