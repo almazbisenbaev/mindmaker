@@ -42,7 +42,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   }, [comment.user_id]);
 
   return (
-    <div className="py-2 px-3 bg-gray-50 rounded text-sm">
+    <div className="py-3 text-sm border-t border-gray-200">
       <div className="flex items-start gap-3">
         {author?.avatar_url ? (
           <img 
@@ -59,10 +59,10 @@ export function CommentItem({ comment }: CommentItemProps) {
         )}
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-gray-700">{author?.username || author?.email || 'Anonymous'}</span>
-            <time className="text-xs text-gray-500">
+            <span className="text-gray-700">{author?.username || author?.email || 'Anonymous'}</span>
+            {/* <time className="text-xs text-gray-500">
               {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-            </time>
+            </time> */}
           </div>
           <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
         </div>

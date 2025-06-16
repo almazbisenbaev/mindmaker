@@ -40,13 +40,14 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
 
   return (
     <div className="p-5 bg-white rounded-xl relative shadow-[0px_6px_11px_-2px_rgba(0,_0,_0,_0.1)]">
-      <div className="whitespace-pre-wrap">{card.content}</div>
+
+      <div className="whitespace-pre-wrap text-xl">{card.content}</div>
       
       {cardComments.length > 0 && (
         <div className="mt-3 space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">
+          {/* <h4 className="text-sm font-medium text-gray-700">
             Comments ({cardComments.length})
-          </h4>
+          </h4> */}
           <div className="space-y-1.5">
             {cardComments.map(comment => (
               <CommentItem key={comment.id} comment={comment} />
