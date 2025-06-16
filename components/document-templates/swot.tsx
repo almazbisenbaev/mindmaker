@@ -2,53 +2,25 @@ import React from 'react';
 import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
 import { useCardsByColumn } from '@/hooks/useCardsByColumn';
-import { createClient } from '@/utils/supabase/client';
 
 interface SWOTTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
   isExporting?: boolean;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
 }
 
-export function SWOTTemplate({ document, cards: initialCards, comments: initialComments, isExporting = false }: SWOTTemplateProps) {
-  const [cards, setCards] = React.useState(initialCards);
-  const [comments, setComments] = React.useState(initialComments);
+export function SWOTTemplate({ 
+  document, 
+  cards, 
+  comments, 
+  isExporting = false,
+  onCardCreated,
+  onCommentsUpdated
+}: SWOTTemplateProps) {
   const cardsByColumn = useCardsByColumn(cards);
-
-  const refreshCards = async () => {
-    const supabase = createClient();
-    const { data: updatedCards } = await supabase
-      .from('cards')
-      .select('*')
-      .eq('document_id', document.id)
-      .order('position');
-
-    if (updatedCards) {
-      setCards(updatedCards);
-    }
-  };
-
-  const refreshComments = async () => {
-    const supabase = createClient();
-    const { data: updatedComments } = await supabase
-      .from('comments')
-      .select('*')
-      .in('card_id', cards.map(card => card.id))
-      .order('created_at');
-
-    if (updatedComments) {
-      setComments(updatedComments);
-    }
-  };
-
-  const handleCardCreated = async () => {
-    await refreshCards();
-  };
-
-  const handleCommentsUpdated = async () => {
-    await refreshComments();
-  };
 
   return (
     <div id="document-content" className="grid grid-cols-2 gap-4">
@@ -59,8 +31,8 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         className="bg-green-50"
         documentId={document.id}
         columnId="strengths"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -70,8 +42,8 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         className="bg-red-50"
         documentId={document.id}
         columnId="weaknesses"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -81,8 +53,8 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         className="bg-blue-50"
         documentId={document.id}
         columnId="opportunities"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -92,8 +64,8 @@ export function SWOTTemplate({ document, cards: initialCards, comments: initialC
         className="bg-yellow-50"
         documentId={document.id}
         columnId="threats"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
     </div>

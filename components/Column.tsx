@@ -11,8 +11,8 @@ interface ColumnProps {
   className?: string;
   documentId: string;
   columnId: string;
-  onCardCreated: () => Promise<void>;
-  onCommentsUpdated: () => Promise<void>;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
   isExporting?: boolean;
 }
 

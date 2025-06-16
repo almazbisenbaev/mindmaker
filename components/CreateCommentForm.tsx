@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/client';
 
 interface CreateCommentFormProps {
   cardId: string;
-  onCommentCreated: () => Promise<void>;
+  onCommentCreated?: () => Promise<void>;
   onCancel: () => void;
 }
 
@@ -38,8 +38,10 @@ export function CreateCommentForm({ cardId, onCommentCreated, onCancel }: Create
 
       // Clear form and notify parent
       setContent('');
-      await onCommentCreated();
-      onCancel(); // Close the form after successful submission
+      if (onCommentCreated) {
+        await onCommentCreated();
+      }
+      onCancel();
     } catch (error) {
       console.error('Error creating comment:', error);
     } finally {

@@ -11,6 +11,9 @@ export interface BaseTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
+  isExporting?: boolean;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
 }
 
 // Export the templates object

@@ -26,15 +26,17 @@ interface TemplateRendererProps {
   cards: Card[];
   comments: CardComment[];
   isExporting?: boolean;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
 }
 
-const TemplateRenderer = ({ document, cards, comments, isExporting }: TemplateRendererProps) => {
+const TemplateRenderer = ({ document, cards, comments, isExporting, onCardCreated, onCommentsUpdated }: TemplateRendererProps) => {
   if (!(document.template in templates)) {
     return <div className="text-red-500">Unknown template type: {document.template}</div>;
   }
   
   const Template = templates[document.template];
-  return <Template document={document} cards={cards} comments={comments} isExporting={isExporting} />;
+  return <Template document={document} cards={cards} comments={comments} isExporting={isExporting} onCardCreated={onCardCreated} onCommentsUpdated={onCommentsUpdated} />;
 };
 
 export default function DocumentPage() {
@@ -76,6 +78,40 @@ export default function DocumentPage() {
       console.error('Error updating document status:', error);
       toast.error('Failed to update document visibility');
     }
+  };
+
+  const refreshCards = async () => {
+    const supabase = createClient();
+    const { data: updatedCards } = await supabase
+      .from('cards')
+      .select('*')
+      .eq('document_id', documentId)
+      .order('position');
+
+    if (updatedCards) {
+      setCards(updatedCards);
+    }
+  };
+
+  const refreshComments = async () => {
+    const supabase = createClient();
+    const { data: updatedComments } = await supabase
+      .from('comments')
+      .select('*')
+      .in('card_id', cards.map(card => card.id))
+      .order('created_at');
+
+    if (updatedComments) {
+      setComments(updatedComments);
+    }
+  };
+
+  const handleCardCreated = async () => {
+    await refreshCards();
+  };
+
+  const handleCommentsUpdated = async () => {
+    await refreshComments();
   };
 
   useEffect(() => {
@@ -229,6 +265,8 @@ export default function DocumentPage() {
               cards={cards} 
               comments={comments}
               isExporting={isExporting}
+              onCardCreated={handleCardCreated}
+              onCommentsUpdated={handleCommentsUpdated}
             />
             <ExportModal
               isOpen={isExportModalOpen}

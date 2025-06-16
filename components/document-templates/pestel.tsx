@@ -2,53 +2,25 @@ import React from 'react';
 import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
 import { useCardsByColumn } from '@/hooks/useCardsByColumn';
-import { createClient } from '@/utils/supabase/client';
 
 interface PESTELTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
   isExporting?: boolean;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
 }
 
-export function PESTELTemplate({ document, cards: initialCards, comments: initialComments, isExporting = false }: PESTELTemplateProps) {
-  const [cards, setCards] = React.useState(initialCards);
-  const [comments, setComments] = React.useState(initialComments);
+export function PESTELTemplate({ 
+  document, 
+  cards, 
+  comments, 
+  isExporting = false,
+  onCardCreated,
+  onCommentsUpdated
+}: PESTELTemplateProps) {
   const cardsByColumn = useCardsByColumn(cards);
-
-  const refreshCards = async () => {
-    const supabase = createClient();
-    const { data: updatedCards } = await supabase
-      .from('cards')
-      .select('*')
-      .eq('document_id', document.id)
-      .order('position');
-
-    if (updatedCards) {
-      setCards(updatedCards);
-    }
-  };
-
-  const refreshComments = async () => {
-    const supabase = createClient();
-    const { data: updatedComments } = await supabase
-      .from('comments')
-      .select('*')
-      .in('card_id', cards.map(card => card.id))
-      .order('created_at');
-
-    if (updatedComments) {
-      setComments(updatedComments);
-    }
-  };
-
-  const handleCardCreated = async () => {
-    await refreshCards();
-  };
-
-  const handleCommentsUpdated = async () => {
-    await refreshComments();
-  };
 
   return (
     <div id="document-content" className="grid grid-cols-3 gap-4">
@@ -59,8 +31,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-purple-50"
         documentId={document.id}
         columnId="political"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -70,8 +42,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-blue-50"
         documentId={document.id}
         columnId="economic"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -81,8 +53,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-green-50"
         documentId={document.id}
         columnId="social"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -92,8 +64,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-yellow-50"
         documentId={document.id}
         columnId="technological"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -103,8 +75,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-teal-50"
         documentId={document.id}
         columnId="environmental"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
@@ -114,8 +86,8 @@ export function PESTELTemplate({ document, cards: initialCards, comments: initia
         className="bg-red-50"
         documentId={document.id}
         columnId="legal"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
     </div>

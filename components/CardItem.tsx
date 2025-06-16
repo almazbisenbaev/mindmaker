@@ -11,7 +11,7 @@ import Link from 'next/link';
 interface CardItemProps {
   card: Card;
   comments: CardComment[];
-  onCommentsUpdated: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
   isExporting?: boolean;
 }
 

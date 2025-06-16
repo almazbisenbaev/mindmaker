@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { exportAsPNG } from "@/utils/export";
 import { Document, Card, CardComment } from '@/types';
 import { templates } from "@/components/document-templates";
+import { createClient } from "@/utils/supabase/client";
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -14,9 +15,43 @@ interface ExportModalProps {
   comments: CardComment[];
 }
 
-export function ExportModal({ isOpen, onClose, document, cards, comments }: ExportModalProps) {
+export function ExportModal({ isOpen, onClose, document, cards: initialCards, comments: initialComments }: ExportModalProps) {
   const [isExporting, setIsExporting] = React.useState(false);
+  const [cards, setCards] = useState<Card[]>(initialCards);
+  const [comments, setComments] = useState<CardComment[]>(initialComments);
   const exportViewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const refreshData = async () => {
+        const supabase = createClient();
+        
+        // Fetch fresh cards
+        const { data: updatedCards } = await supabase
+          .from('cards')
+          .select('*')
+          .eq('document_id', document.id)
+          .order('position');
+
+        if (updatedCards) {
+          setCards(updatedCards);
+        }
+
+        // Fetch fresh comments
+        const { data: updatedComments } = await supabase
+          .from('comments')
+          .select('*')
+          .in('card_id', updatedCards?.map(card => card.id) || [])
+          .order('created_at');
+
+        if (updatedComments) {
+          setComments(updatedComments);
+        }
+      };
+
+      refreshData();
+    }
+  }, [isOpen, document.id]);
 
   const handleExport = async () => {
     if (!exportViewRef.current) return;

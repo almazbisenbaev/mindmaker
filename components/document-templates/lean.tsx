@@ -2,53 +2,25 @@ import React from 'react';
 import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
 import { useCardsByColumn } from '@/hooks/useCardsByColumn';
-import { createClient } from '@/utils/supabase/client';
 
 interface LeanTemplateProps {
   document: Document;
   cards: Card[];
   comments: CardComment[];
   isExporting?: boolean;
+  onCardCreated?: () => Promise<void>;
+  onCommentsUpdated?: () => Promise<void>;
 }
 
-export function LeanTemplate({ document, cards: initialCards, comments: initialComments, isExporting = false }: LeanTemplateProps) {
-  const [cards, setCards] = React.useState(initialCards);
-  const [comments, setComments] = React.useState(initialComments);
+export function LeanTemplate({ 
+  document, 
+  cards, 
+  comments, 
+  isExporting = false,
+  onCardCreated,
+  onCommentsUpdated
+}: LeanTemplateProps) {
   const cardsByColumn = useCardsByColumn(cards);
-
-  const refreshCards = async () => {
-    const supabase = createClient();
-    const { data: updatedCards } = await supabase
-      .from('cards')
-      .select('*')
-      .eq('document_id', document.id)
-      .order('position');
-
-    if (updatedCards) {
-      setCards(updatedCards);
-    }
-  };
-
-  const refreshComments = async () => {
-    const supabase = createClient();
-    const { data: updatedComments } = await supabase
-      .from('comments')
-      .select('*')
-      .in('card_id', cards.map(card => card.id))
-      .order('created_at');
-
-    if (updatedComments) {
-      setComments(updatedComments);
-    }
-  };
-
-  const handleCardCreated = async () => {
-    await refreshCards();
-  };
-
-  const handleCommentsUpdated = async () => {
-    await refreshComments();
-  };
 
   return (
     <div id="document-content" className="grid grid-cols-3 gap-4">
@@ -59,8 +31,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-red-50"
         documentId={document.id}
         columnId="problem"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -70,8 +42,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-green-50"
         documentId={document.id}
         columnId="solution"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -81,8 +53,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-blue-50"
         documentId={document.id}
         columnId="metrics"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -92,8 +64,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-purple-50"
         documentId={document.id}
         columnId="valueProposition"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -103,8 +75,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-yellow-50"
         documentId={document.id}
         columnId="unfairAdvantage"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -114,8 +86,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-indigo-50"
         documentId={document.id}
         columnId="channels"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -125,8 +97,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-pink-50"
         documentId={document.id}
         columnId="customerSegments"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -136,8 +108,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-gray-50"
         documentId={document.id}
         columnId="costStructure"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column
@@ -147,8 +119,8 @@ export function LeanTemplate({ document, cards: initialCards, comments: initialC
         className="bg-orange-50"
         documentId={document.id}
         columnId="revenueStreams"
-        onCardCreated={handleCardCreated}
-        onCommentsUpdated={handleCommentsUpdated}
+        onCardCreated={onCardCreated}
+        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
     </div>

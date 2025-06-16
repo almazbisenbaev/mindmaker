@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client';
 interface CreateCardFormProps {
   documentId: string;
   columnId: string;
-  onCardCreated: () => void;
+  onCardCreated?: () => Promise<void>;
   onClose: () => void;
 }
 
@@ -46,8 +46,10 @@ export function CreateCardForm({ documentId, columnId, onCardCreated, onClose }:
 
       // Clear form and notify parent
       setContent('');
-      await onCardCreated(); // Make sure to await the callback
-      onClose(); // Close the form after successful submission
+      if (onCardCreated) {
+        await onCardCreated();
+      }
+      onClose();
     } catch (error) {
       console.error('Error creating card:', error);
     } finally {
