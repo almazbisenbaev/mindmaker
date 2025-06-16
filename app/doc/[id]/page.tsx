@@ -19,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { ExportModal } from "@/components/ExportModal";
 
 interface TemplateRendererProps {
   document: Document;
@@ -46,6 +47,7 @@ export default function DocumentPage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
 
   const params = useParams();
   const documentId = params.id;
@@ -211,21 +213,7 @@ export default function DocumentPage() {
               </div>
               <Button 
                 variant="outline" 
-                onClick={async () => {
-                  try {
-                    // Temporarily set isExporting to true
-                    setIsExporting(true);
-                    // Wait for state to update
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    await exportAsPNG('document-content', document?.title || 'document-export');
-                    toast.success('Document exported successfully');
-                  } catch (error) {
-                    toast.error('Failed to export document');
-                    console.error(error);
-                  } finally {
-                    setIsExporting(false);
-                  }
-                }}
+                onClick={() => setIsExportModalOpen(true)}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export as PNG
@@ -235,12 +223,21 @@ export default function DocumentPage() {
         </div>
         
         {document && (
-          <TemplateRenderer 
-            document={document} 
-            cards={cards} 
-            comments={comments}
-            isExporting={isExporting}
-          />
+          <>
+            <TemplateRenderer 
+              document={document} 
+              cards={cards} 
+              comments={comments}
+              isExporting={isExporting}
+            />
+            <ExportModal
+              isOpen={isExportModalOpen}
+              onClose={() => setIsExportModalOpen(false)}
+              document={document}
+              cards={cards}
+              comments={comments}
+            />
+          </>
         )}
       </div>
     </>
