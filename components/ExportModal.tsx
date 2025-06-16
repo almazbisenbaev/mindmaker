@@ -40,7 +40,7 @@ export function ExportModal({ isOpen, onClose, document, cards, comments }: Expo
       {/* Hidden export view */}
       <div 
         ref={exportViewRef}
-        className="fixed left-0 top-0 -z-50"
+        className="fixed left-0 top-0 -z-50 opacity-0"
         style={{ width: '1200px' }}
       >
         <div id="export-view" className="p-6">
