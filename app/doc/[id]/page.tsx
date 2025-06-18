@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Link } from "lucide-react";
 import { ExportModal } from "@/components/ExportModal";
 
 interface TemplateRendererProps {
@@ -248,6 +248,24 @@ export default function DocumentPage() {
                     <SelectItem value="public">Public</SelectItem>
                   </SelectContent>
                 </Select>
+                {document?.status === 'public' && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const url = window.location.href;
+                      navigator.clipboard.writeText(url)
+                        .then(() => {
+                          toast.success('Link copied to clipboard');
+                        })
+                        .catch(() => {
+                          toast.error('Failed to copy link');
+                        });
+                    }}
+                  >
+                    <Link className="w-4 h-4 mr-2" />
+                    Copy link
+                  </Button>
+                )}
               </div>
               <Button 
                 variant="outline" 
