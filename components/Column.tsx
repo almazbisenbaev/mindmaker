@@ -80,11 +80,11 @@ export function Column({
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <div className={`p-6 rounded-xl border border-[rgba(0,0,0,0.05)] ${className} relative`}>
+    <div className={`p-2 rounded-xl border border-[rgba(0,0,0,0.05)] ${className} relative`}>
 
-      <h3 className="text-md font-semibold mb-5 transform uppercase">{title}</h3>
+      <h3 className="text-md font-semibold p-3">{title}</h3>
 
-      <div className="space-y-3">
+      <div className="space-y-3 p-3">
         {cards.length === 0 && !isExporting && (
           <div className="text-sm text-muted-foreground p-4 rounded-lg bg-background/25 border border-dashed border-muted-foreground/25">
             {getColumnPlaceholder(columnId, title)}
