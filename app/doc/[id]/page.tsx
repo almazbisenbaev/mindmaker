@@ -214,9 +214,12 @@ export default function DocumentPage() {
 
   return (
     <>
+
       <Toaster />
+
       <div className="container mx-auto">
-        <div className="flex items-center justify-between mb-8">
+
+        <div className="flex items-center justify-between my-8 pb-8 border-b border-gray-200">
           <div>
             <h2 className="text-2xl mb-2">{document?.title}</h2>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -233,7 +236,6 @@ export default function DocumentPage() {
           {isOwner && (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Label htmlFor="status">Visibility</Label>
                 <Select 
                   defaultValue={document?.status}
                   onValueChange={(value: 'private' | 'public') => updateDocumentStatus(value)}
