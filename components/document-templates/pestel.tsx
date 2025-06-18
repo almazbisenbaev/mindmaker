@@ -28,7 +28,7 @@ export function PESTELTemplate({
         title="Political" 
         cards={cardsByColumn.political || []} 
         comments={comments}
-        className="bg-purple-50"
+        className="bg-yellow-50"
         documentId={document.id}
         columnId="political"
         onCardCreated={onCardCreated}
@@ -39,7 +39,7 @@ export function PESTELTemplate({
         title="Economic" 
         cards={cardsByColumn.economic || []} 
         comments={comments}
-        className="bg-blue-50"
+        className="bg-purple-50"
         documentId={document.id}
         columnId="economic"
         onCardCreated={onCardCreated}
@@ -61,7 +61,7 @@ export function PESTELTemplate({
         title="Technological" 
         cards={cardsByColumn.technological || []} 
         comments={comments}
-        className="bg-yellow-50"
+        className="bg-red-50"
         documentId={document.id}
         columnId="technological"
         onCardCreated={onCardCreated}
@@ -83,7 +83,7 @@ export function PESTELTemplate({
         title="Legal" 
         cards={cardsByColumn.legal || []} 
         comments={comments}
-        className="bg-red-50"
+        className="bg-blue-50"
         documentId={document.id}
         columnId="legal"
         onCardCreated={onCardCreated}
