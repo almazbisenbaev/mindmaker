@@ -40,7 +40,6 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
 
   return (
     <div className="p-5 bg-white rounded-xl relative shadow-[0px_6px_11px_-2px_rgba(0,_0,_0,_0.1)]">
-
       <div className="whitespace-pre-wrap text-xl">{card.content}</div>
       
       {cardComments.length > 0 && (
@@ -59,12 +58,13 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
       {!isExporting && !isAddingComment ? (
         user ? (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="mt-3 text-muted-foreground absolute bottom-2 right-2"
+            className="mt-6 w-full"
             onClick={() => setIsAddingComment(true)}
           >
-            <MessageSquarePlus className="h-4 w-4 mr-1" />
+            <MessageSquarePlus className="h-4 w-4 mr-2" />
+            Add comment
           </Button>
         ) : cardComments.length === 0 ? (
           <div className="mt-3 text-sm text-gray-600">

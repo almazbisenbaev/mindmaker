@@ -217,7 +217,7 @@ export default function DocumentPage() {
 
       <Toaster />
 
-      <div className="container mx-auto">
+      <div className="container mx-auto pb-8">
 
         <div className="flex items-center justify-between my-8 pb-8 border-b border-gray-200">
           <div>
