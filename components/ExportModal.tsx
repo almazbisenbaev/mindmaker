@@ -90,7 +90,7 @@ export function ExportModal({ isOpen, onClose, document, cards: initialCards, co
 
       {/* Modal */}
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[1200px] w-full">
+        <DialogContent className="max-w-[1200px] w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               <span>Export Document</span>
