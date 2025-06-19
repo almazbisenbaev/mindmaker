@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Geist } from "next/font/google";
+// import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -12,14 +13,19 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Mindmaker. SWOT Analysis, Lean Canvas, PESTEL Analysis and other frameworks online",
+  description: "Create and explore SWOT, Lean Canvas, PESTEL, and other business analysis frameworks online with Mindmaker. Simple, fast, and free to use.",
 };
 
-const geistSans = Geist({
+// const geistSans = Geist({
+//   display: "swap",
+//   subsets: ["latin"],
+// });
+
+const interFont = Inter({
   display: "swap",
-  subsets: ["latin"],
-});
+  subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext", "greek", "greek-ext", "vietnamese"],
+})
 
 export default function RootLayout({
   children,
@@ -27,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={geistSans.className} suppressHydrationWarning>
+    <html lang="en" className={interFont.className} suppressHydrationWarning>
       <body className="bg-background text-foreground -tracking-[.0075em]">
 
         <main>
