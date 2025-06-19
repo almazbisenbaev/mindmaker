@@ -1,4 +1,5 @@
 import * as React from "react"
+import { GoogleAnalytics } from '@next/third-parties/google'
 // import { Geist } from "next/font/google";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
@@ -45,6 +46,8 @@ export default function RootLayout({
         </main>
         
         <Toaster />
+
+        <GoogleAnalytics gaId="G-TZX8HM9QLR" />
 
       </body>
     </html>
