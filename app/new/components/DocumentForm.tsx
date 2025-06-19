@@ -84,7 +84,7 @@ export default function DocumentForm() {
             id="swot"
             name="SWOT Analysis"
             description="Analyze strengths, weaknesses, opportunities, and threats"
-            icon="/images/illustr-swot.png"
+            icon="/images/thumb-swot.jpg"
             isSelected={watchTemplate === 'swot'}
             onSelect={(id) => setValue('template', id)}
           />
@@ -92,7 +92,7 @@ export default function DocumentForm() {
             id="lean"
             name="Lean Canvas"
             description="Visualize your business model and strategy"
-            icon="/images/illustr-swot.png"
+            icon="/images/thumb-lean.jpg"
             isSelected={watchTemplate === 'lean'}
             onSelect={(id) => setValue('template', id)}
           />
@@ -100,7 +100,7 @@ export default function DocumentForm() {
             id="pestel"
             name="PESTEL Analysis"
             description="Analyze external macro-environmental factors"
-            icon="/images/illustr-swot.png"
+            icon="/images/thumb-pestel.jpg"
             isSelected={watchTemplate === 'pestel'}
             onSelect={(id) => setValue('template', id)}
           />
