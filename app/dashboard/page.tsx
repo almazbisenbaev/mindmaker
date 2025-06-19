@@ -100,67 +100,73 @@ export default function DashboardPage() {
       </div>
 
       <div className="container mx-auto pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {documents.map((doc) => (
-            <div 
-              key={doc.id} 
-              className="bg-white p-10 rounded-3xl border border-gray-200 relative"
-            >
-              <div className="absolute top-4 right-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push(`/doc/${doc.id}`)}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      <span>View document</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => copyDocumentLink(doc.id)}
-                    >
-                      <Link2 className="mr-2 h-4 w-4" />
-                      <span>Copy link</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => { setDocToDelete(doc); setDeleteDialogOpen(true); }}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="min-h-[100px]">
-                <h3 className="text-lg font-semibold mb-2">{doc.title}</h3>
-                {doc.description && (
-                  <p className="mt-2 text-sm text-gray-600">{doc.description}</p>
-                )}
-              </div>
-
-                <div className="flex gap-2 text-sm text-gray-500 mb-2">
-                  {doc.template}
-                  <span>•</span>
-                  {doc.status}
-                  <span>•</span>
-                  {new Date(doc.created_at).toLocaleDateString()}
+        {documents.length === 0 ? (
+          <div className="text-center text-muted-foreground py-24">
+            You have no documents yet. Create a new document to get started.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {documents.map((doc) => (
+              <div 
+                key={doc.id} 
+                className="bg-white p-10 rounded-3xl border border-gray-200 relative"
+              >
+                <div className="absolute top-4 right-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => router.push(`/doc/${doc.id}`)}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>View document</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => copyDocumentLink(doc.id)}
+                      >
+                        <Link2 className="mr-2 h-4 w-4" />
+                        <span>Copy link</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => { setDocToDelete(doc); setDeleteDialogOpen(true); }}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
-                <Button
-                  onClick={() => router.push(`/doc/${doc.id}`)}
-                  className="mt-4 w-full bg-gray-100 hover:bg-neutral-200"
-                  variant="ghost"
-                >
-                  Open
-                </Button>
+                <div className="min-h-[100px]">
+                  <h3 className="text-lg font-semibold mb-2">{doc.title}</h3>
+                  {doc.description && (
+                    <p className="mt-2 text-sm text-gray-600">{doc.description}</p>
+                  )}
+                </div>
 
-            </div>
-          ))}
-        </div>
+                  <div className="flex gap-2 text-sm text-gray-500 mb-2">
+                    {doc.template}
+                    <span>•</span>
+                    {doc.status}
+                    <span>•</span>
+                    {new Date(doc.created_at).toLocaleDateString()}
+                  </div>
+
+                  <Button
+                    onClick={() => router.push(`/doc/${doc.id}`)}
+                    className="mt-4 w-full bg-gray-100 hover:bg-neutral-200"
+                    variant="ghost"
+                  >
+                    Open
+                  </Button>
+
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Dialog */}
