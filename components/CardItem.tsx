@@ -40,7 +40,7 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
 
   return (
     <div className="p-5 bg-white rounded-xl relative shadow-[0px_6px_11px_-2px_rgba(0,_0,_0,_0.1)]">
-      <div className="whitespace-pre-wrap text-xl">{card.content}</div>
+      <div className="whitespace-pre-wrap text-lg">{card.content}</div>
       
       {cardComments.length > 0 && (
         <div className="mt-3 space-y-2">
@@ -67,9 +67,11 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
             Add comment
           </Button>
         ) : cardComments.length === 0 ? (
-          <div className="mt-3 text-sm text-gray-600">
-            <Link href="/sign-in" className="text-primary hover:underline">Sign in</Link> to leave a comment.
-          </div>
+          <>
+          {/* // <div className="mt-3 text-sm text-gray-600">
+          //   <Link href="/sign-in" className="text-primary hover:underline">Sign in</Link> to leave a comment.
+          // </div> */}
+          </>
         ) : null
       ) : !isExporting && (
         <CreateCommentForm

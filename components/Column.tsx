@@ -82,7 +82,7 @@ export function Column({
   return (
     <div className={`p-2 rounded-xl border border-[rgba(0,0,0,0.05)] ${className} relative`}>
 
-      <h3 className="text-md font-semibold p-3">{title}</h3>
+      <h3 className="text-md font-semibold p-3 pb-1">{title}</h3>
 
       <div className="space-y-3 p-3">
         {cards.length === 0 && !isExporting && (

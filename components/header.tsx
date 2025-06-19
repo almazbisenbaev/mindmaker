@@ -150,7 +150,7 @@ export default function Header() {
                   </NavigationMenuLink>
                 </NavigationMenuItem> */}
 
-                <NavigationMenuItem>
+                {/* <NavigationMenuItem>
                   <NavigationMenuTrigger>Learn</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[300px] gap-4 py-2">
@@ -182,10 +182,36 @@ export default function Header() {
                       </li>
                     </ul>
                   </NavigationMenuContent>
+                </NavigationMenuItem> */}
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Examples</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[300px] gap-4 py-2">
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link target="_blank" href="/doc/4b770e6d-063c-4ddf-a2bf-fa24d2bb6723">
+                            <div className="px-6 py-2">
+                              <div className="font-medium">OpenAI SWOT Analysis</div>
+                              {/* <div className="text-muted-foreground">Get a clear picture of where your business stands internally and how it fits into the market</div> */}
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link target="_blank" href="/doc/28be7ff0-db36-4c7e-8093-17510cc1fd02">
+                            <div className="px-6 py-2">
+                              <div className="font-medium">Airbnb Lean Canvas</div>
+                              {/* <div className="text-muted-foreground">Quickly map out and validate your business idea before building anything</div> */}
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
                 </NavigationMenuItem>
 
                 {/* <NavigationMenuItem>
-                  <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
+                  <NavigationMenuTrigger>Examples</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-4">
                       <li>
@@ -251,9 +277,9 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
 
-                  <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                  {/* <DropdownMenuLabel>Menu</DropdownMenuLabel> */}
 
-                  <DropdownMenuSeparator />
+                  {/* <DropdownMenuSeparator /> */}
 
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="w-full">
@@ -261,51 +287,55 @@ export default function Header() {
                     </Link>
                   </DropdownMenuItem>
 
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuLabel>Examples</DropdownMenuLabel>
+
                   <DropdownMenuItem asChild>
-                    <Link href="/about" className="w-full">
-                      About Mindmaker
+                    <Link href="/doc/4b770e6d-063c-4ddf-a2bf-fa24d2bb6723" className="w-full">
+                      OpenAI SWOT Analysis
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href="/blog" className="w-full">
-                      What's new?
+                    <Link href="/doc/28be7ff0-db36-4c7e-8093-17510cc1fd02" className="w-full">
+                      Airbnb Lean Canvas
                     </Link>
                   </DropdownMenuItem>
 
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>List</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[300px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Components</div>
-                    <div className="text-muted-foreground">
-                      Browse all components in the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Documentation</div>
-                    <div className="text-muted-foreground">
-                      Learn how to use the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Blog</div>
-                    <div className="text-muted-foreground">
-                      Read our latest blog posts.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+                  {/* <NavigationMenuItem>
+                    <NavigationMenuTrigger>List</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[300px] gap-4">
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Link href="#">
+                              <div className="font-medium">Components</div>
+                              <div className="text-muted-foreground">
+                                Browse all components in the library.
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                          <NavigationMenuLink asChild>
+                            <Link href="#">
+                              <div className="font-medium">Documentation</div>
+                              <div className="text-muted-foreground">
+                                Learn how to use the library.
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                          <NavigationMenuLink asChild>
+                            <Link href="#">
+                              <div className="font-medium">Blog</div>
+                              <div className="text-muted-foreground">
+                                Read our latest blog posts.
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem> */}
 
                 </DropdownMenuContent>
               </DropdownMenu>
