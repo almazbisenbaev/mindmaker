@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 // Define the Document interface based on your Supabase table structure
 interface Document {
@@ -40,6 +41,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>([]); 
   const [user, setUser] = useState<User | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [docToDelete, setDocToDelete] = useState<Document | null>(null);
 
   const handleDelete = async (docId: string) => {
     const supabase = createClient();
@@ -49,12 +52,13 @@ export default function DashboardPage() {
       .eq('id', docId);
 
     if (error) {
+      toast.error('Error deleting document');
       console.error('Error deleting document:', error);
       return;
     }
 
-    // Update the documents list after deletion
     setDocuments(documents.filter(doc => doc.id !== docId));
+    toast.success('Document deleted successfully');
   };
 
   useEffect(() => {
@@ -121,7 +125,7 @@ export default function DashboardPage() {
                       <span>Copy link</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => handleDelete(doc.id)}
+                      onClick={() => { setDocToDelete(doc); setDeleteDialogOpen(true); }}
                       className="text-red-600 focus:text-red-600"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -158,6 +162,33 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Document</DialogTitle>
+          </DialogHeader>
+          <div>Are you sure you want to delete <b>{docToDelete?.title}</b>? This action cannot be undone.</div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={async () => {
+                if (docToDelete) {
+                  await handleDelete(docToDelete.id);
+                  setDeleteDialogOpen(false);
+                  setDocToDelete(null);
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* <pre className="mt-4 p-4 bg-gray-100 rounded">
         {JSON.stringify(documents, null, 2)}
