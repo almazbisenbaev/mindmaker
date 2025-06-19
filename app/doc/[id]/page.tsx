@@ -50,6 +50,8 @@ export default function DocumentPage() {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
+  const [titleValue, setTitleValue] = useState<string>("");
 
   const params = useParams();
   const documentId = params.id;
@@ -77,6 +79,61 @@ export default function DocumentPage() {
     } catch (error) {
       console.error('Error updating document status:', error);
       toast.error('Failed to update document visibility');
+    }
+  };
+
+  const updateDocumentTitle = async (newTitle: string) => {
+    if (!newTitle.trim()) {
+      toast.error('Title cannot be empty');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/documents', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: documentId,
+          title: newTitle.trim()
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update document title');
+      }
+
+      const updatedDocument = await response.json();
+      setDocument(updatedDocument);
+      toast.success('Document title updated successfully');
+    } catch (error) {
+      console.error('Error updating document title:', error);
+      toast.error('Failed to update document title');
+    }
+  };
+
+  const handleTitleClick = () => {
+    if (isOwner) {
+      setIsEditingTitle(true);
+      setTitleValue(document?.title || "");
+    }
+  };
+
+  const handleTitleBlur = () => {
+    if (isEditingTitle) {
+      setIsEditingTitle(false);
+      if (titleValue !== document?.title) {
+        updateDocumentTitle(titleValue);
+      }
+    }
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleTitleBlur();
+    } else if (e.key === 'Escape') {
+      setIsEditingTitle(false);
+      setTitleValue(document?.title || "");
     }
   };
 
@@ -217,11 +274,28 @@ export default function DocumentPage() {
 
       <Toaster />
 
-      <div className="container mx-auto pb-8">
+      <div className="container mx-auto">
 
         <div className="flex items-center justify-between my-8 pb-8 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl mb-2">{document?.title}</h2>
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={titleValue}
+                onChange={(e) => setTitleValue(e.target.value)}
+                onBlur={handleTitleBlur}
+                onKeyDown={handleTitleKeyDown}
+                className="text-2xl mb-2 bg-gray-100 border-none outline-none rounded py-1 w-full"
+                autoFocus
+              />
+            ) : (
+              <h2 
+                className={`text-2xl mb-2 ${isOwner ? 'cursor-pointer hover:bg-gray-100 rounded py-1 transition-colors' : ''}`}
+                onClick={handleTitleClick}
+              >
+                {document?.title}
+              </h2>
+            )}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {author?.avatar_url && (
                 <img 

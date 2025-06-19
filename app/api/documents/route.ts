@@ -53,12 +53,17 @@ export async function PATCH(request: Request) {
 
     // Get request body and document ID
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, title } = body;
 
-    // Update document status
+    // Prepare update object with only provided fields
+    const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (title !== undefined) updateData.title = title;
+
+    // Update document
     const { data: document, error } = await supabase
       .from('documents')
-      .update({ status })
+      .update(updateData)
       .eq('id', id)
       .eq('user_id', user.id) // Ensure user owns the document
       .select()
