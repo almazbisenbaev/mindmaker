@@ -6,6 +6,7 @@ import { exportAsPNG } from "@/utils/export";
 import { Document, Card, CardComment } from '@/types';
 import { templates } from "@/components/document-templates";
 import { createClient } from "@/utils/supabase/client";
+import { useDocumentContext } from '@/app/doc/[id]/DocumentContext';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -16,6 +17,15 @@ interface ExportModalProps {
 }
 
 export function ExportModal({ isOpen, onClose, document, cards: initialCards, comments: initialComments }: ExportModalProps) {
+  let contextCards: Card[] | undefined;
+  let contextComments: CardComment[] | undefined;
+  try {
+    // Try to use context if available
+    const ctx = useDocumentContext();
+    contextCards = ctx.cards;
+    contextComments = ctx.comments;
+  } catch {}
+
   const [isExporting, setIsExporting] = React.useState(false);
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [comments, setComments] = useState<CardComment[]>(initialComments);
@@ -69,6 +79,8 @@ export function ExportModal({ isOpen, onClose, document, cards: initialCards, co
   };
 
   const Template = templates[document.template];
+  const exportCards = contextCards || cards;
+  const exportComments = contextComments || comments;
 
   return (
     <>
@@ -81,8 +93,6 @@ export function ExportModal({ isOpen, onClose, document, cards: initialCards, co
         <div id="export-view" className="p-6">
           <Template 
             document={document} 
-            cards={cards} 
-            comments={comments}
             isExporting={true}
           />
         </div>
@@ -108,8 +118,6 @@ export function ExportModal({ isOpen, onClose, document, cards: initialCards, co
             <div style={{ width: '1200px' }}>
               <Template 
                 document={document} 
-                cards={cards} 
-                comments={comments}
                 isExporting={true}
               />
             </div>

@@ -2,24 +2,18 @@ import React from 'react';
 import { Document, Card, CardComment } from '@/types';
 import { Column } from '../Column';
 import { useCardsByColumn } from '@/hooks/useCardsByColumn';
+import { useDocumentContext } from '@/app/doc/[id]/DocumentContext';
 
 interface SWOTTemplateProps {
   document: Document;
-  cards: Card[];
-  comments: CardComment[];
   isExporting?: boolean;
-  onCardCreated?: () => Promise<void>;
-  onCommentsUpdated?: () => Promise<void>;
 }
 
 export function SWOTTemplate({ 
   document, 
-  cards, 
-  comments, 
-  isExporting = false,
-  onCardCreated,
-  onCommentsUpdated
+  isExporting = false
 }: SWOTTemplateProps) {
+  const { cards, comments, handleCardCreated, handleCommentsUpdated } = useDocumentContext();
   const cardsByColumn = useCardsByColumn(cards);
 
   return (
@@ -27,45 +21,33 @@ export function SWOTTemplate({
       <Column 
         title="Strengths" 
         cards={cardsByColumn.strengths || []} 
-        comments={comments}
         className="bg-green-50"
         documentId={document.id}
         columnId="strengths"
-        onCardCreated={onCardCreated}
-        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
         title="Weaknesses" 
         cards={cardsByColumn.weaknesses || []} 
-        comments={comments}
         className="bg-red-50"
         documentId={document.id}
         columnId="weaknesses"
-        onCardCreated={onCardCreated}
-        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
         title="Opportunities" 
         cards={cardsByColumn.opportunities || []} 
-        comments={comments}
         className="bg-blue-50"
         documentId={document.id}
         columnId="opportunities"
-        onCardCreated={onCardCreated}
-        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
       <Column 
         title="Threats" 
         cards={cardsByColumn.threats || []} 
-        comments={comments}
         className="bg-yellow-50"
         documentId={document.id}
         columnId="threats"
-        onCardCreated={onCardCreated}
-        onCommentsUpdated={onCommentsUpdated}
         isExporting={isExporting}
       />
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Document, Card, CardComment } from '@/types';
@@ -20,23 +19,19 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { Download, Link } from "lucide-react";
 import { ExportModal } from "@/components/ExportModal";
+import { DocumentProvider } from './DocumentContext';
 
 interface TemplateRendererProps {
   document: Document;
-  cards: Card[];
-  comments: CardComment[];
   isExporting?: boolean;
-  onCardCreated?: () => Promise<void>;
-  onCommentsUpdated?: () => Promise<void>;
 }
 
-const TemplateRenderer = ({ document, cards, comments, isExporting, onCardCreated, onCommentsUpdated }: TemplateRendererProps) => {
+const TemplateRenderer = ({ document, isExporting }: TemplateRendererProps) => {
   if (!(document.template in templates)) {
     return <div className="text-red-500">Unknown template type: {document.template}</div>;
   }
-  
   const Template = templates[document.template];
-  return <Template document={document} cards={cards} comments={comments} isExporting={isExporting} onCardCreated={onCardCreated} onCommentsUpdated={onCommentsUpdated} />;
+  return <Template document={document} isExporting={isExporting} />;
 };
 
 export default function DocumentPage() {
@@ -261,6 +256,12 @@ export default function DocumentPage() {
     fetchData();
   }, [documentId]);
 
+  // Memoize handlers for context
+  const refreshCardsCb = useCallback(refreshCards, [documentId]);
+  const refreshCommentsCb = useCallback(refreshComments, [cards, documentId]);
+  const handleCardCreatedCb = useCallback(handleCardCreated, [refreshCards]);
+  const handleCommentsUpdatedCb = useCallback(handleCommentsUpdated, [refreshComments]);
+
   if (isLoading) {
     return <div className="p-6 text-center">Loading...</div>;
   }
@@ -270,8 +271,19 @@ export default function DocumentPage() {
   }
 
   return (
-    <>
-
+    <DocumentProvider value={{
+      document,
+      setDocument,
+      cards,
+      setCards,
+      comments,
+      setComments,
+      refreshCards: refreshCardsCb,
+      refreshComments: refreshCommentsCb,
+      handleCardCreated: handleCardCreatedCb,
+      handleCommentsUpdated: handleCommentsUpdatedCb,
+      isOwner,
+    }}>
       <Toaster />
 
       <div className="container mx-auto pb-12">
@@ -356,11 +368,7 @@ export default function DocumentPage() {
           <>
             <TemplateRenderer 
               document={document} 
-              cards={cards} 
-              comments={comments}
               isExporting={isExporting}
-              onCardCreated={handleCardCreated}
-              onCommentsUpdated={handleCommentsUpdated}
             />
             <ExportModal
               isOpen={isExportModalOpen}
@@ -372,6 +380,6 @@ export default function DocumentPage() {
           </>
         )}
       </div>
-    </>
+    </DocumentProvider>
   );
 }

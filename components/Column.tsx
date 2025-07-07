@@ -3,16 +3,14 @@ import { Card, CardComment } from '@/types';
 import { CardItem } from './CardItem';
 import { CreateCardForm } from './CreateCardForm';
 import { Button } from '@/components/ui/button';
+import { useDocumentContext } from '@/app/doc/[id]/DocumentContext';
 
 interface ColumnProps {
   title: string;
   cards: Card[];
-  comments: CardComment[];
   className?: string;
   documentId: string;
   columnId: string;
-  onCardCreated?: () => Promise<void>;
-  onCommentsUpdated?: () => Promise<void>;
   isExporting?: boolean;
 }
 
@@ -69,21 +67,17 @@ const getColumnPlaceholder = (columnId: string, title: string): string => {
 export function Column({ 
   title, 
   cards, 
-  comments, 
   className,
   documentId,
   columnId,
-  onCardCreated,
-  onCommentsUpdated,
   isExporting = false
 }: ColumnProps) {
   const [showForm, setShowForm] = useState(false);
+  const { comments, handleCardCreated, handleCommentsUpdated } = useDocumentContext();
 
   return (
     <div className={`p-2 rounded-xl border border-[rgba(0,0,0,0.05)] ${className} relative`}>
-
       <h3 className="text-md font-semibold p-3 pb-1">{title}</h3>
-
       <div className="space-y-3 p-3">
         {cards.length === 0 && !isExporting && (
           <div className="text-sm text-muted-foreground p-4 rounded-lg bg-background/25 border border-dashed border-muted-foreground/25">
@@ -94,22 +88,18 @@ export function Column({
           <CardItem 
             key={card.id} 
             card={card}
-            comments={comments}
-            onCommentsUpdated={onCommentsUpdated}
             isExporting={isExporting}
           />
         ))}
       </div>
-
       {showForm && (
         <CreateCardForm 
           documentId={documentId}
           columnId={columnId}
-          onCardCreated={onCardCreated}
+          onCardCreated={handleCardCreated}
           onClose={() => setShowForm(false)}
         />
       )}
-      
       {!isExporting && (
         <Button
           onClick={() => setShowForm(true)}
@@ -120,7 +110,6 @@ export function Column({
           Add Card
         </Button>
       )}
-
     </div>
   );
 }

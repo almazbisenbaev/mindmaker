@@ -7,17 +7,17 @@ import { MessageSquarePlus } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { useDocumentContext } from '@/app/doc/[id]/DocumentContext';
 
 interface CardItemProps {
   card: Card;
-  comments: CardComment[];
-  onCommentsUpdated?: () => Promise<void>;
   isExporting?: boolean;
 }
 
-export function CardItem({ card, comments, onCommentsUpdated, isExporting = false }: CardItemProps) {
+export function CardItem({ card, isExporting = false }: CardItemProps) {
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const { comments, handleCommentsUpdated } = useDocumentContext();
   const cardComments = comments.filter(c => c.card_id === card.id);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export function CardItem({ card, comments, onCommentsUpdated, isExporting = fals
       ) : !isExporting && (
         <CreateCommentForm
           cardId={card.id}
-          onCommentCreated={onCommentsUpdated}
+          onCommentCreated={handleCommentsUpdated}
           onCancel={() => setIsAddingComment(false)}
         />
       )}
