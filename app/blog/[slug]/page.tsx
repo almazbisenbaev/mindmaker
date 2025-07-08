@@ -8,6 +8,7 @@ import { BlogPost } from '@/types/blog'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 
 export default function BlogPostPage() {
 
@@ -97,11 +98,18 @@ export default function BlogPostPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <article className="prose prose-lg">
+        {post.featured_image && (
+          <img
+            src={post.featured_image}
+            alt={post.title}
+            className="w-full max-h-96 object-cover rounded mb-6"
+          />
+        )}
         <h1>{post.title}</h1>
         {post.meta_description && (
           <p className="text-gray-600 mt-2 mb-6">{post.meta_description}</p>
         )}
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        <ReactMarkdown>{post.content}</ReactMarkdown>
       </article>
 
       {user && (

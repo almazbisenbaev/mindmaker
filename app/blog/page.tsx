@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { BlogPost } from '@/types/blog'
 import { toast } from 'sonner'
+import ReactMarkdown from 'react-markdown'
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -44,7 +45,7 @@ export default function BlogPage() {
                   {post.title}
                 </a>
               </h2>
-              {post.excerpt && <p className="text-gray-600">{post.excerpt}</p>}
+              {post.excerpt && <div className="text-gray-600"><ReactMarkdown>{post.excerpt}</ReactMarkdown></div>}
               {post.tags && post.tags.length > 0 && (
                 <div className="flex gap-2 flex-wrap">
                   {post.tags.map((tag) => (

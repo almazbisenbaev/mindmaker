@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
@@ -10,6 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import 'easymde/dist/easymde.min.css'
+
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false })
 
 export default function BlogPostForm() {
   const router = useRouter()
@@ -17,9 +21,10 @@ export default function BlogPostForm() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+  const contentRef = useRef('')
   const [excerpt, setExcerpt] = useState('')
   const [featuredImage, setFeaturedImage] = useState('')
+  const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -64,6 +69,8 @@ export default function BlogPostForm() {
     try {
       const supabase = createClient()
       const slug = generateSlug(title)
+
+      const content = contentRef.current
 
       console.log('Attempting to create post with slug:', slug)
       console.log('Form data:', {
@@ -132,6 +139,46 @@ export default function BlogPostForm() {
     }
   }
 
+  const handleFeaturedImageUpload = async (file: File) => {
+    const supabase = createClient()
+    const fileName = `featured/${Date.now()}_${file.name}`
+    const { data, error } = await supabase.storage.from('blog-files').upload(fileName, file)
+    if (error) throw error
+    const { data: { publicUrl } } = supabase.storage.from('blog-files').getPublicUrl(fileName)
+    setFeaturedImage(publicUrl)
+  }
+
+  const handleImageUpload = async (file: File) => {
+    const supabase = createClient()
+    const fileName = `content/${Date.now()}_${file.name}`
+    const { data, error } = await supabase.storage.from('blog-files').upload(fileName, file)
+    if (error) throw error
+    const { data: { publicUrl } } = supabase.storage.from('blog-files').getPublicUrl(fileName)
+    return publicUrl
+  }
+
+  // Memoize image upload handler for useMemo
+  const handleImageUploadCallback = useCallback(async (
+    file: File,
+    onSuccess: (url: string) => void,
+    onError: (msg: string) => void
+  ) => {
+    try {
+      const url = await handleImageUpload(file)
+      onSuccess(url)
+    } catch (e) {
+      toast.error('Image upload failed')
+      onError('Image upload failed')
+    }
+  }, [handleImageUpload, toast])
+
+  const simpleMdeOptions = useMemo(() => ({
+    spellChecker: false,
+    placeholder: 'Write your post in markdown... You can insert images using the toolbar.',
+    uploadImage: true,
+    imageUploadFunction: handleImageUploadCallback,
+  }), [handleImageUploadCallback])
+
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -162,12 +209,10 @@ export default function BlogPostForm() {
 
       <div>
         <Label htmlFor="content">Content</Label>
-        <Textarea
+        <SimpleMDE
           id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-          className="min-h-[200px]"
+          onChange={value => { contentRef.current = value; }}
+          options={simpleMdeOptions}
         />
       </div>
 
@@ -183,12 +228,27 @@ export default function BlogPostForm() {
       </div>
 
       <div>
-        <Label htmlFor="featuredImage">Featured Image URL</Label>
-        <Input
+        <Label htmlFor="featuredImage">Featured Image</Label>
+        <input
           id="featuredImage"
-          value={featuredImage}
-          onChange={(e) => setFeaturedImage(e.target.value)}
+          type="file"
+          accept="image/*"
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (file) {
+              setFeaturedImageFile(file)
+              try {
+                await handleFeaturedImageUpload(file)
+                toast.success('Featured image uploaded!')
+              } catch (err) {
+                toast.error('Failed to upload featured image')
+              }
+            }
+          }}
         />
+        {featuredImage && (
+          <img src={featuredImage} alt="Featured" className="mt-2 max-h-40 rounded" />
+        )}
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
