@@ -18,7 +18,7 @@ export function LeanTemplate({
 
   return (
     <>
-      <div id="document-content" className="grid grid-cols-5 grid-rows-3 gap-4">
+      <div id="document-content" className="grid grid-cols-5 grid-rows-[auto_auto_auto] gap-4">
         <Column
           title="1. Problem"
           cards={cardsByColumn.problem || []}
