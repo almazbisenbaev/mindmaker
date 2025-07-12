@@ -6,23 +6,23 @@ import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { BlogPost } from '@/types/blog'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import { ArrowLeft, Calendar, Clock, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 
 export default function BlogPostPage() {
-
   const params = useParams();
-
   const slug = params.slug;
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [post, setPost] = useState<BlogPost | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [userRoles, setUserRoles] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -101,26 +101,31 @@ export default function BlogPostPage() {
     }
   }
 
-  const handlePublish = async () => {
+  const handleStatusChange = async (newStatus: string) => {
     if (!post || !user) return
 
+    setIsUpdating(true)
     try {
       const supabase = createClient()
+      const updateData = {
+        is_published: newStatus === 'published',
+        published_at: newStatus === 'published' ? new Date().toISOString() : null
+      }
+
       const { error } = await supabase
         .from('blog_posts')
-        .update({
-          is_published: true,
-          published_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', post.id)
 
       if (error) throw error
-      toast.success('Post published successfully!')
+      
+      toast.success(`Post ${newStatus === 'published' ? 'published' : 'unpublished'} successfully!`)
       await fetchPost()
     } catch (error) {
-      console.error('Error publishing post:', error)
-      setError('Failed to publish post')
-      toast.error('Failed to publish post')
+      console.error('Error updating post status:', error)
+      toast.error('Failed to update post status')
+    } finally {
+      setIsUpdating(false)
     }
   }
 
@@ -179,50 +184,182 @@ export default function BlogPostPage() {
 
   const canManagePost = user && (userRoles.includes('admin') || userRoles.includes('editor'))
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div className="text-red-500">{error}</div>
-  if (!post) return <div>Post not found</div>
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-900 text-xl mb-4">Error loading post</div>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Link href="/blog" className="text-gray-900 hover:text-gray-600">
+            ← Back to Blog
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-900 text-xl mb-4">Post not found</div>
+          <Link href="/blog" className="text-gray-900 hover:text-gray-600">
+            ← Back to Blog
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <article className="prose prose-lg">
-        {post.featured_image && (
-          <img
-            src={post.featured_image}
-            alt={post.title}
-            className="w-full max-h-96 object-cover rounded mb-6"
-          />
-        )}
-        <div className="flex items-center gap-4 mb-6">
-          <h1>{post.title}</h1>
-          {!post.is_published && (
-            <span className="text-orange-600 bg-orange-100 px-3 py-1 rounded-full text-sm font-medium">
-              Draft
-            </span>
-          )}
-        </div>
-        {post.meta_description && (
-          <p className="text-gray-600 mt-2 mb-6">{post.meta_description}</p>
-        )}
-        <ReactMarkdown>{post.content}</ReactMarkdown>
-      </article>
-
-      {canManagePost && (
-        <div className="mt-8 flex gap-4">
-          {!post.is_published && (
-            <Button onClick={handlePublish}>
-              Publish Post
-            </Button>
-          )}
-          <Button 
-            variant="destructive" 
-            onClick={handleDelete}
-            disabled={isDeleting}
+    <div className="min-h-screen bg-white">
+      {/* Back Navigation */}
+      <div className="border-b border-gray-100">
+        <div className="max-w-3xl mx-auto px-6 py-6">
+          <Link 
+            href="/blog" 
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
-            {isDeleting ? 'Deleting...' : 'Delete Post'}
-          </Button>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Blog
+          </Link>
         </div>
-      )}
+      </div>
+
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        {/* Admin Controls */}
+        {canManagePost && (
+          <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Edit className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">Admin</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex items-center gap-2">
+                  <Select 
+                    value={post.is_published ? 'published' : 'draft'} 
+                    onValueChange={handleStatusChange}
+                    disabled={isUpdating}
+                  >
+                    <SelectTrigger className="w-24 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="published">Published</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="h-8"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <article>
+          {/* Featured Image */}
+          {post.featured_image && (
+            <div className="mb-8">
+              <img
+                src={post.featured_image}
+                alt={post.title}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            </div>
+          )}
+
+          {/* Status Badge */}
+          {!post.is_published && (
+            <div className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-medium mb-6">
+              <EyeOff className="w-3 h-3" />
+              Draft
+            </div>
+          )}
+
+          {/* Title */}
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            {post.title}
+          </h1>
+
+          {/* Meta Information */}
+          <div className="flex items-center gap-6 text-sm text-gray-600 mb-8">
+            {post.published_at && (
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                <span>{formatDate(post.published_at)}</span>
+              </div>
+            )}
+            {post.reading_time && (
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                <span>{post.reading_time} min read</span>
+              </div>
+            )}
+            {post.created_at && !post.published_at && (
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                <span>{formatDate(post.created_at)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Meta Description */}
+          {post.meta_description && (
+            <div className="mb-8">
+              <p className="text-gray-600 text-lg leading-relaxed">
+                {post.meta_description}
+              </p>
+            </div>
+          )}
+
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              {post.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Content */}
+          <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-h1:text-3xl prose-h1:mb-8 prose-h1:mt-12 prose-h2:text-2xl prose-h2:mb-6 prose-h2:mt-10 prose-h3:text-xl prose-h3:mb-4 prose-h3:mt-8 prose-h4:text-lg prose-h4:mb-3 prose-h4:mt-6 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-800 prose-strong:text-gray-900 prose-strong:font-semibold prose-em:text-gray-700 prose-blockquote:border-l-4 prose-blockquote:border-gray-200 prose-blockquote:pl-6 prose-blockquote:py-2 prose-blockquote:bg-gray-50 prose-blockquote:rounded-r-lg prose-ul:my-6 prose-ol:my-6 prose-li:text-gray-700 prose-li:mb-2 prose-code:text-sm prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-hr:my-8 prose-hr:border-gray-200">
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          </div>
+        </article>
+      </div>
     </div>
   )
 }

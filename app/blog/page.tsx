@@ -7,6 +7,9 @@ import { BlogPost } from '@/types/blog'
 import { User } from '@supabase/supabase-js'
 import { toast } from 'sonner'
 import ReactMarkdown from 'react-markdown'
+import Link from 'next/link'
+import { Calendar, Clock, EyeOff, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -85,51 +88,120 @@ export default function BlogPage() {
 
   const canManagePosts = user && (userRoles.includes('admin') || userRoles.includes('editor'))
 
-  if (isLoading) return <div>Loading...</div>
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Blog</h1>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Blog</h1>
+            {canManagePosts && (
+              <Link href="/blog/new">
+                <Button size="sm" className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  New Post
+                </Button>
+              </Link>
+            )}
+          </div>
+          <p className="text-gray-600">Thoughts, ideas, and insights.</p>
+        </div>
 
-      <div className="space-y-8">
-        {posts?.map((post) => (
-          <article key={post.id} className="space-y-4">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">
-                <a href={`/blog/${post.slug}`} className="hover:text-primary">
-                  {post.title}
-                </a>
-              </h2>
-              {post.excerpt && <div className="text-gray-600"><ReactMarkdown>{post.excerpt}</ReactMarkdown></div>}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="text-sm bg-gray-100 px-2 py-1 rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <time dateTime={post.created_at}>
-                  {new Date(post.created_at).toLocaleDateString()}
-                </time>
-                {post.reading_time && (
-                  <span>
-                    • {post.reading_time} min read
-                  </span>
-                )}
-                {!post.is_published && (
-                  <span className="text-orange-600">
-                    • Draft
-                  </span>
-                )}
-              </div>
+        {/* Posts */}
+        <div className="space-y-12">
+          {posts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No posts yet.</p>
             </div>
-          </article>
-        ))}
-      </div>
+          ) : (
+            posts.map((post) => (
+              <article key={post.id} className="group">
+                {/* Featured Image */}
+                {post.featured_image && (
+                  <div className="mb-6">
+                    <Link href={`/blog/${post.slug}`}>
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        className="w-full h-48 object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+                      />
+                    </Link>
+                  </div>
+                )}
 
+                {/* Content */}
+                <div>
+                  {/* Status Badge */}
+                  {!post.is_published && (
+                    <div className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-medium mb-4">
+                      <EyeOff className="w-3 h-3" />
+                      Draft
+                    </div>
+                  )}
+
+                  {/* Title */}
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-gray-600 transition-colors">
+                    <Link href={`/blog/${post.slug}`}>
+                      {post.title}
+                    </Link>
+                  </h2>
+
+                  {/* Meta Information */}
+                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{formatDate(post.created_at)}</span>
+                    </div>
+                    {post.reading_time && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{post.reading_time} min read</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Excerpt */}
+                  {post.excerpt && (
+                    <div className="text-gray-600 mb-4 leading-relaxed">
+                      <ReactMarkdown>{post.excerpt}</ReactMarkdown>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   )
 }
