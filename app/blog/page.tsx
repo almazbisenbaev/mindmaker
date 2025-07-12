@@ -4,12 +4,65 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { BlogPost } from '@/types/blog'
+import { User } from '@supabase/supabase-js'
 import { toast } from 'sonner'
 import ReactMarkdown from 'react-markdown'
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [userRoles, setUserRoles] = useState<string[]>([])
+
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // Get initial user state
+    supabase.auth.getUser().then(({ data: { user }}) => {
+      setUser(user)
+      if (user) {
+        fetchUserRoles(user.id)
+      }
+    })
+
+    // Listen for auth state changes
+    const { data: { subscription }} = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+      if (session?.user) {
+        fetchUserRoles(session.user.id)
+      } else {
+        setUserRoles([])
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const fetchUserRoles = async (userId: string) => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select(`
+          roles (
+            name
+          )
+        `)
+        .eq('user_id', userId)
+
+      if (error) {
+        console.error('Error fetching user roles:', error)
+        return
+      }
+
+      const roles = data?.map((item: any) => item.roles.name) || []
+      setUserRoles(roles)
+    } catch (error) {
+      console.error('Error fetching user roles:', error)
+    }
+  }
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -29,6 +82,8 @@ export default function BlogPage() {
 
     fetchPosts()
   }, [])
+
+  const canManagePosts = user && (userRoles.includes('admin') || userRoles.includes('editor'))
 
   if (isLoading) return <div>Loading...</div>
 
@@ -62,6 +117,11 @@ export default function BlogPage() {
                 {post.reading_time && (
                   <span>
                     • {post.reading_time} min read
+                  </span>
+                )}
+                {!post.is_published && (
+                  <span className="text-orange-600">
+                    • Draft
                   </span>
                 )}
               </div>
