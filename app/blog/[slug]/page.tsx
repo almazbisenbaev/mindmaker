@@ -144,11 +144,20 @@ export default function BlogPostPage() {
       // Delete featured image from storage if it exists
       if (post.featured_image) {
         try {
-          // Extract the file path from the URL
+          // Extract the file path from the Supabase storage URL
+          // URL format: https://project.supabase.co/storage/v1/object/public/blog-files/featured/1234567890_filename.jpg
           const url = new URL(post.featured_image)
-          const filePath = url.pathname.split('/').pop() // Get the filename
+          const pathSegments = url.pathname.split('/')
           
-          if (filePath) {
+          // Find the index of 'blog-files' in the path
+          const blogFilesIndex = pathSegments.findIndex(segment => segment === 'blog-files')
+          
+          if (blogFilesIndex !== -1 && blogFilesIndex + 1 < pathSegments.length) {
+            // Extract everything after 'blog-files/' including the folder structure
+            const filePath = pathSegments.slice(blogFilesIndex + 1).join('/')
+            
+            console.log('Attempting to delete featured image:', filePath)
+            
             const { error: storageError } = await supabase.storage
               .from('blog-files')
               .remove([filePath])
@@ -156,7 +165,11 @@ export default function BlogPostPage() {
             if (storageError) {
               console.error('Error deleting featured image:', storageError)
               // Continue with post deletion even if image deletion fails
+            } else {
+              console.log('Successfully deleted featured image:', filePath)
             }
+          } else {
+            console.warn('Could not extract file path from URL:', post.featured_image)
           }
         } catch (error) {
           console.error('Error processing featured image deletion:', error)
