@@ -140,6 +140,12 @@ export default function Header() {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link href="/blog">What's new?</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                     <Link href="/new">New analysis</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -284,6 +290,12 @@ export default function Header() {
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="w-full">
                       Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/blog" className="w-full">
+                      What's new?
                     </Link>
                   </DropdownMenuItem>
 
