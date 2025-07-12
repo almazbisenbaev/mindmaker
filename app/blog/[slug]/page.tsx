@@ -91,7 +91,6 @@ export default function BlogPostPage() {
   }
 
   if (isLoading) return <div>Loading...</div>
-  if (!user) return <div>Please sign in to view this post</div>
   if (error) return <div className="text-red-500">{error}</div>
   if (!post) return <div>Post not found</div>
 
