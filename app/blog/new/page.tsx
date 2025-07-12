@@ -142,18 +142,54 @@ export default function BlogPostForm() {
   const handleFeaturedImageUpload = async (file: File) => {
     const supabase = createClient()
     const fileName = `featured/${Date.now()}_${file.name}`
+    
+    console.log('Attempting to upload featured image:', {
+      fileName,
+      fileSize: file.size,
+      fileType: file.type,
+      bucket: 'blog-files'
+    })
+    
     const { data, error } = await supabase.storage.from('blog-files').upload(fileName, file)
-    if (error) throw error
+    
+    if (error) {
+      console.error('Featured image upload error:', {
+        error,
+        errorMessage: error.message
+      })
+      throw new Error(`Upload failed: ${error.message}`)
+    }
+    
+    console.log('Featured image uploaded successfully:', data)
     const { data: { publicUrl } } = supabase.storage.from('blog-files').getPublicUrl(fileName)
+    console.log('Generated public URL:', publicUrl)
     setFeaturedImage(publicUrl)
   }
 
   const handleImageUpload = async (file: File) => {
     const supabase = createClient()
     const fileName = `content/${Date.now()}_${file.name}`
+    
+    console.log('Attempting to upload content image:', {
+      fileName,
+      fileSize: file.size,
+      fileType: file.type,
+      bucket: 'blog-files'
+    })
+    
     const { data, error } = await supabase.storage.from('blog-files').upload(fileName, file)
-    if (error) throw error
+    
+    if (error) {
+      console.error('Content image upload error:', {
+        error,
+        errorMessage: error.message
+      })
+      throw new Error(`Upload failed: ${error.message}`)
+    }
+    
+    console.log('Content image uploaded successfully:', data)
     const { data: { publicUrl } } = supabase.storage.from('blog-files').getPublicUrl(fileName)
+    console.log('Generated public URL:', publicUrl)
     return publicUrl
   }
 
@@ -241,7 +277,9 @@ export default function BlogPostForm() {
                 await handleFeaturedImageUpload(file)
                 toast.success('Featured image uploaded!')
               } catch (err) {
-                toast.error('Failed to upload featured image')
+                console.error('Featured image upload failed:', err)
+                const errorMessage = err instanceof Error ? err.message : 'Failed to upload featured image'
+                toast.error(errorMessage)
               }
             }
           }}
