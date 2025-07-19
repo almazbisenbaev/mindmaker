@@ -18,11 +18,6 @@ export const metadata = {
   description: "Create and explore SWOT, Lean Canvas, PESTEL, and other business analysis frameworks online with Mindmaker. Simple, fast, and free to use.",
 };
 
-// const geistSans = Geist({
-//   display: "swap",
-//   subsets: ["latin"],
-// });
-
 const interFont = Inter({
   display: "swap",
   subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext", "greek", "greek-ext", "vietnamese"],
