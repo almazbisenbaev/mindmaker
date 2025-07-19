@@ -104,6 +104,14 @@ export default function DocumentForm() {
             isSelected={watchTemplate === 'pestel'}
             onSelect={(id) => setValue('template', id)}
           />
+          <TemplateCard
+            id="porters"
+            name="Porter’s Five Forces"
+            description="Analyze industry competition and market forces"
+            icon="/images/thumb-swot.jpg"
+            isSelected={watchTemplate === 'porters'}
+            onSelect={(id) => setValue('template', id)}
+          />
         </div>
         {errors.template && (
           <p className="text-sm text-red-500">{errors.template.message}</p>
