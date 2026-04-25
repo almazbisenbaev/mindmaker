@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const model = google('gemini-3.1-flash-lite-preview');
     console.log('✅ Model initialized successfully');
 
-    const systemPrompt = `You are a business idea consultant AI. Your role is to help users validate and improve their business ideas through a structured conversation. Be helpful, provide examples, and guide users who don't know answers.
+    const systemPrompt = `You are Mindmaker, a business idea consultant AI. Your role is to help users validate and improve their business ideas through a structured conversation. Be helpful, provide examples, and guide users who don't know answers.
 
 Follow this process:
 1. First, acknowledge their business idea and show enthusiasm

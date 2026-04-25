@@ -26,7 +26,7 @@ export default function Home() {
 
   // Debug logging on component mount
   useEffect(() => {
-    console.log('🚀 Business Idea Consultant - Component mounted');
+    console.log('🚀 Mindmaker - Component mounted');
     console.log('🌍 Environment:', process.env.NODE_ENV);
     console.log('📝 Note: Client-side cannot access server environment variables');
     console.log('🔍 Check debug overlay (bottom-right) for server API key status');
@@ -180,15 +180,15 @@ export default function Home() {
             <div className="space-y-10 text-center">
               <div className="inline-flex items-center gap-2 px-5 py-2 border border-primary/20 bg-primary/5 backdrop-blur-xl text-xs font-bold uppercase tracking-[0.3em] rounded-full shadow-[0_0_20px_rgba(99,102,241,0.1)] text-primary animate-in fade-in slide-in-from-top-4 duration-1000">
                 <Sparkles className="w-4 h-4" />
-                <span>Advanced AI Strategy Engine</span>
+                <span>Mindmaker AI Strategy Engine</span>
               </div>
               
               <div className="space-y-6">
                 <h1 className="text-8xl md:text-9xl font-black tracking-tight leading-[0.8] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                   <span className="text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-500 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
-                    STRATEGY<br />
+                    MIND<br />
                   </span>
-                  <span className="text-primary italic">CONSULTANT</span>
+                  <span className="text-primary italic">MAKER</span>
                 </h1>
                 <p className="text-xl md:text-3xl font-medium max-w-3xl text-zinc-500 leading-relaxed mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
                   Elevate your business vision with <span className="text-zinc-900 dark:text-white font-bold underline decoration-primary/30 decoration-4 underline-offset-4">architectural precision</span> and data-driven intelligence.
@@ -263,7 +263,7 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-white flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white dark:text-zinc-900" />
             </div>
-            <span className="text-sm font-black uppercase tracking-[0.4em]">Strategy Engine v2.4</span>
+            <span className="text-sm font-black uppercase tracking-[0.4em]">Mindmaker v2.4</span>
           </div>
           <div className="flex gap-12 text-xs font-bold uppercase tracking-[0.4em]">
             {['Twitter', 'Github', 'Discord'].map(link => (

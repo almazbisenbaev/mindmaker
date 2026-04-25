@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IDEA CONSULTANT | AI Business Strategy",
-  description: "Validate your business concepts with raw, honest, and data-driven AI guidance.",
+  title: "Mindmaker | AI Business Strategy",
+  description: "Mindmaker helps you validate business concepts with raw, honest, and data-driven AI guidance.",
 };
 
 export default function RootLayout({
