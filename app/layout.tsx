@@ -1,27 +1,21 @@
-import * as React from "react"
-import { GoogleAnalytics } from '@next/third-parties/google'
-// import { Geist } from "next/font/google";
-import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import Header from "@/components/header";
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
-export const metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Mindmaker. SWOT Analysis, Lean Canvas, PESTEL Analysis and other frameworks online",
-  description: "Create and explore SWOT, Lean Canvas, PESTEL, and other business analysis frameworks online with Mindmaker. Simple, fast, and free to use.",
+export const metadata: Metadata = {
+  title: "IDEA CONSULTANT | AI Business Strategy",
+  description: "Validate your business concepts with raw, honest, and data-driven AI guidance.",
 };
-
-const interFont = Inter({
-  display: "swap",
-  subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext", "greek", "greek-ext", "vietnamese"],
-})
 
 export default function RootLayout({
   children,
@@ -29,24 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={interFont.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground -tracking-[.0075em]">
-
-        <main>
-
-          <Header />
-
-          {children}
-
-        </main>
-        
-        <Toaster />
-
-        <GoogleAnalytics gaId="G-TZX8HM9QLR" />
-
-      </body>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
-
-
